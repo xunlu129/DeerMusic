@@ -1,26 +1,34 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app">
+
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  name: "App",
+  components: {},
+  data() {
+    return {
+
+    }
+  },
+  mounted() {
+    var url = this.HOST + "/comment/music?id=186016&limit=1"
+    this.$axios.get(url)
+    .then(res => {
+      console.log(res.data);
+      console.log("看得到我吗？");
+    })
+    .catch(error => {
+      console.log(error);
+    })
+  },
+  methods: {
+    
   }
-}
+};
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 </style>
