@@ -1,0 +1,41 @@
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #ccc;
+}
+* {
+  scrollbar-width: thin;
+}
+.el-drawer.ltr,
+.el-drawer.rtl,
+.el-drawer__container {
+  height: calc(80vh - 55px) !important;
+}
+.el-slider__bar {
+  background-color: #ff4e4e !important;
+}
+.el-slider__button {
+  border: 1px solid #ccc !important;
+  width: 10px !important;
+  height: 10px !important;
+}
+.el-slider__runway {
+  height: 5px !important;
+}
+.el-slider__bar {
+  height: 5px !important;
+}
+body .btn-primary,
+body .btn-primary:focus {
+  background-color: #ec4141;
+  color: white;
+  transition: 0.1s all ease;
+  border: none;
+}
+body .btn-primary:hover {
+  background-color: #d93f3f;
+  color: white;
+}
