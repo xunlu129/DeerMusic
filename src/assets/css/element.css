@@ -1,0 +1,248 @@
+.el-pagination.is-background .el-pager li:not(.disabled):hover {
+  color: black !important;
+  background-color: #f4f4f4 !important;
+}
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+  background-color: #ec4141 !important;
+  color: white !important;
+}
+
+.el-pagination.is-background .btn-next,
+.el-pagination.is-background .btn-prev,
+.el-pagination.is-background .el-pager li {
+  background-color: #fff !important;
+  border: 1px solid #ddd;
+  font-weight: normal;
+}
+
+.el-tabs__nav-wrap::after {
+  height: 0 !important;
+}
+
+.el-tabs__active-bar {
+  background-color: #ec4141 !important;
+  bottom: 4px !important;
+}
+
+.el-tabs__item:hover {
+  color: black !important;
+}
+
+.el-tabs__item.is-active {
+  color: black !important;
+  font-weight: 600;
+}
+
+.el-tabs__item {
+  font-size: 12px !important;
+}
+
+.el-table .cell {
+  line-height: 20px !important;
+  font-size: 12px !important;
+  transform: scale(0.88);
+  color: rgb(128, 128, 128) !important;
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}
+
+.el-table .cell i:nth-child(1) {
+  font-size: 12px;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.el-table th > .cell {
+  font-weight: normal !important;
+  font-size: 12px !important;
+  transform: scale(0.88);
+  color: rgb(148, 148, 148) !important;
+  margin-bottom: 5px;
+}
+
+.el-table__row td:nth-child(3) .cell {
+  color: rgb(36, 36, 36) !important;
+}
+
+.el-table--mini td,
+.el-table--mini th {
+  padding: 3px 0 !important;
+}
+
+.el-table td,
+.el-table th.is-leaf {
+  border: none !important;
+}
+
+.el-table__body tr.el-table__row--striped td {
+  background-color: #fff !important;
+}
+
+tbody .el-table th,
+.el-table tr {
+  background-color: #f9f9f9 !important;
+}
+
+.el-table--enable-row-hover .el-table__body tr:hover > td {
+  background-color: #f0f1f2 !important;
+}
+
+.el-table__body tr.current-row > td {
+  background-color: #e5e5e5 !important;
+}
+
+/* .el-slider__bar {
+    background-color: #ff4e4e !important;
+}
+
+.el-slider__button {
+    border: 1px solid #ccc !important;
+    width: 10px !important;
+    height: 10px !important;
+}
+
+.el-slider__runway {
+    height: 5px ! important;
+}
+
+.el-slider__bar {
+    height: 5px !important;
+} */
+
+.el-slider__button-wrapper {
+  top: -16px !important;
+}
+
+.el-drawer__body {
+  overflow: auto;
+  /* overflow-x: auto; */
+}
+
+/*2.隐藏滚动条*/
+.el-drawer__container ::-webkit-scrollbar {
+  display: none;
+}
+
+.el-drawer .el-table .cell {
+  color: rgb(39, 39, 39) !important;
+}
+
+.el-drawer .el-table td:nth-child(3) .cell {
+  color: #aaa !important;
+}
+
+.el-drawer .el-table td,
+.el-table th {
+  padding: 5px 0;
+}
+
+/* .el-slider__button-wrapper {
+    height: 4px;
+} */
+
+body .el-table .el-table__row .currentRow {
+  color: #ec4141 !important;
+}
+
+.el-drawer__wrapper {
+  bottom: auto !important;
+}
+
+.rtl {
+  width: 300px !important;
+}
+
+.el-menu-item {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.el-aside::-webkit-scrollbar {
+  width: 6px;
+}
+
+.el-aside::-webkit-scrollbar-thumb {
+  background-color: #e0e0e0;
+}
+
+.searchPop {
+  height: 380px;
+  overflow-y: scroll;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.searchPop::-webkit-scrollbar {
+  display: none;
+}
+
+.el-table__row {
+  width: 100%;
+}
+
+.el-table__row td:nth-child(7) {
+  display: none;
+}
+
+tr .is-leaf:nth-child(7) {
+  display: none;
+}
+
+.el-table--scrollable-x .el-table__body-wrapper {
+  overflow-x: hidden !important;
+}
+
+.right .el-slider__button-wrapper {
+  width: 10px !important;
+}
+
+.el-popup-parent--hidden {
+  padding-right: 0 !important;
+}
+
+.el-menu-item:focus,
+.el-menu-item:hover {
+  background-color: #fff !important;
+}
+
+.el-dialog__body {
+  padding: 0 20px 40px !important;
+}
+
+.el-dialog {
+  border-radius: 10px !important;
+}
+
+.el-dialog__close:hover {
+  color: #ea4848 !important;
+}
+
+.el-tooltip__popper {
+  z-index: 20000 !important;
+  transform: scale(0.9);
+  bottom: 0px;
+  top: unset !important;
+}
+
+.el-tooltip__popper .popper__arrow {
+  bottom: 5px !important;
+  top: unset !important;
+}
+
+.sortPop {
+  position: absolute;
+  z-index: 0 !important;
+  height: 40%;
+  overflow-y: scroll;
+}
+
+.sortPop::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* 拖动条不能缩放，会有偏移问题 */
+.el-slider {
+  zoom: 0.8 !important;
+}

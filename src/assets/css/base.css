@@ -1,0 +1,181 @@
+@import url('./element.css');
+@import url('./global.css');
+@import url('./normalize.css');
+@import url('../font/font.css');
+@import 'https://at.alicdn.com/t/font_2559410_7ih6tcqtq07.css?spm=a313x.7781069.1998910419.47&file=font_2559410_7ih6tcqtq07.css';
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #ccc;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+i,
+tr,
+.buttons div {
+  cursor: pointer;
+}
+
+.buttons div {
+  background-color: #fff;
+}
+
+.buttons div:hover {
+  filter: brightness(0.97);
+}
+
+/*:root -> 获取根元素html*/
+:root {
+  --color-text: #666;
+  --color-high-text: #317ffb;
+  --color-tint: #51d9fb;
+  --color-background: #fff;
+  --font-size: 14px;
+  --line-height: 1.5;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Harmony Font';
+  user-select: none; /* 禁止用户鼠标在页面上选中文字/图片等 */
+  -webkit-tap-highlight-color: transparent; /* webkit是苹果浏览器引擎，tap点击，highlight背景高亮，color颜色，颜色用数值调节 */
+  background: var(--color-background);
+  color: var(--color-text);
+  /* rem vw/vh */
+  /* width: 100vw; */
+}
+
+a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+li {
+  list-style: none;
+}
+
+.clear-fix::after {
+  clear: both;
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  visibility: hidden;
+}
+
+.clear-fix {
+  zoom: 1;
+}
+
+/* .left {
+    float: left;
+  }
+  
+  .right {
+    float: right;
+  }
+   */
+
+/* 火狐专用属性 */
+@-moz-document url-prefix() {
+  .el-aside {
+    height: calc(100vh - 105px) !important;
+  }
+
+  .routerView {
+    height: calc(100vh - 105px) !important;
+  }
+
+  .discover {
+    height: calc(100vh - 158px) !important;
+  }
+
+  .commentCardSwitch {
+    top: calc(100vh - 105px) !important;
+  }
+
+  .album {
+    height: calc(100vh - 105px) !important;
+  }
+
+  .musicDetailCard .album {
+    height: unset !important;
+  }
+
+  .favorites {
+    height: calc(100vh - 165px) !important;
+  }
+
+  .musicDetailCard {
+    height: calc(100vh - 55px) !important;
+  }
+
+  .hide {
+    bottom: calc(-100vh + 55px) !important;
+  }
+
+  .bottom {
+    width: 55vw !important;
+  }
+
+  .Personal {
+    height: calc(100vh - 105px) !important;
+  }
+
+  .mvList .cardList {
+    height: calc(100vh - 265px) !important;
+  }
+
+  .videoList .cardList {
+    height: calc(100vh - 215px) !important;
+  }
+
+  .videoDetail {
+    height: calc(100vh - 105px) !important;
+  }
+
+  .el-drawer.ltr,
+  .el-drawer.rtl,
+  .el-drawer__container {
+    height: calc(100vh - 55px) !important;
+  }
+
+  .el-slider__bar {
+    background-color: #ff4e4e !important;
+  }
+
+  .el-slider__button {
+    border: 1px solid #ccc !important;
+    width: 8px !important;
+    height: 8px !important;
+  }
+
+  .el-slider__runway {
+    height: 4px !important;
+  }
+
+  .el-slider__bar {
+    height: 4px !important;
+  }
+
+  .el-slider__button-wrapper {
+    top: -16px !important;
+  }
+}
