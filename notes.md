@@ -7,6 +7,7 @@
 - `axios`: 用于在浏览器和Node.js中发送http请求的Promise based库。
 - `core-js`: 提供ES6+功能的polyfill库。
 - `element-plus`: 基于Vue 3的UI组件库。
+- `@element-plus/icons-vue`: 基于 Vue3 的element图标
 - `less`: 一种CSS预处理器，允许使用变量，嵌套规则，mixins等特性，生成更加简洁、易于维护的CSS。
 - `less-loader`: 用于webpack构建中编译less文件的loader。
 - `vue`: 用于构建用户界面的渐进式JavaScript框架。
@@ -81,13 +82,17 @@ import App from './App.vue'
 // 我们使用的是Element Plus UI框架（vue3专用）
 import ElementPlus from 'element-plus'
 import 'element-plus/theme-chalk/index.css'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'	
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'	// element图标
 // 还有更多的全局配置都可以在这引入
 import axios from 'axios'
 
 const app = createApp(App)
 
 app.use(ElementPlus, { locale: zhCn })
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  	app.component(key, component)	// 全部注册以便随时使用
+}
 
 //测试用，实际可按情况更改
 app.config.globalProperties.HOST = "/api"
