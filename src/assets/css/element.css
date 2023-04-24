@@ -20,7 +20,7 @@
 }
 
 .el-tabs__active-bar {
-  background-color: #ec4141 !important;
+  background-color: #c0c0c0 !important;
   bottom: 4px !important;
 }
 
@@ -34,7 +34,8 @@
 }
 
 .el-tabs__item {
-  font-size: 12px !important;
+  font-size: 15px !important;
+  color: rgb(82, 82, 82);
 }
 
 .el-table .cell {

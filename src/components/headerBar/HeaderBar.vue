@@ -1,13 +1,16 @@
 <template>
     <div class="headerBar">
+        <!--LOGO-->
         <div class="left">
             <img src="~assets/img/logo.png" alt="" />
         </div>
         <div class="center">
+            <!--返回和前进-->
             <div class="buttons">
                 <div class="button" @click="$router.go(-1)"><ArrowLeft /></div>
                 <div class="button" @click="$router.go(1)"><ArrowRight /></div>
             </div>
+            <!--搜索框-->
             <div class="search">
                 <el-popover popper-class="searchPop" 
                             popper-style="width: 350px; height: 450px; padding: 12px 12px 0 12px !important;" 
@@ -28,19 +31,20 @@
                 </el-popover>
             </div>
         </div>
+        <!--账户相关-->
         <div class="right">
             <div class="user">
                 <div class="avatar">
                     <!--登录框-->
                     <el-popover popper-class="accountPop" 
                                 placement="bottom" 
-                                width="400" 
+                                width="350" 
                                 trigger="click" 
                                 hide-after="0">
                         <template #reference>
                             <img src="~assets/img/avatar.jpg" alt="" />
                         </template>
-                        这里是登录组件
+                        <Login />
                     </el-popover>
                 </div>
                 <div class="userName">点击头像登录</div>
@@ -52,8 +56,10 @@
 </template>
 
 <script>
+import Login from 'components/login/LoginPop.vue'
+
 export default {
-    components: {},
+    components: {Login},
     name: 'HeaderBar',
     data() {
         return {

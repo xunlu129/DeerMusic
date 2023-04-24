@@ -30,12 +30,12 @@
 }
 body .btn-primary,
 body .btn-primary:focus {
-  background-color: #ec4141;
+  background-color: #616161;
   color: white;
   transition: 0.1s all ease;
   border: none;
 }
 body .btn-primary:hover {
-  background-color: #d93f3f;
+  background-color: #777777;
   color: white;
 }
