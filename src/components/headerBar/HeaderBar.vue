@@ -8,29 +8,67 @@
                 <div class="button" @click="$router.go(-1)"><ArrowLeft /></div>
                 <div class="button" @click="$router.go(1)"><ArrowRight /></div>
             </div>
+            <div class="search">
+                <el-popover popper-class="searchPop" 
+                            popper-style="width: 350px; height: 450px; padding: 12px 12px 0 12px !important;" 
+                            placement="bottom" 
+                            trigger="focus" 
+                            :visible="isSearchPopShow" 
+                            hide-after="0" 
+                            show-arrow="false">
+                    <template #reference>
+                        <el-input placeholder="请输入内容" 
+                                    prefix-icon="Search" 
+                                    v-model="searchInput"
+                                    @focus="isSearchPopShow = true"
+                                    @blur="isSearchPopShow = false"></el-input>
+                    </template>
+                    <!--热搜榜-->
+                    这里是热搜榜
+                </el-popover>
+            </div>
         </div>
         <div class="right">
             <div class="user">
                 <div class="avatar">
                     <!--登录框-->
-                    <el-popover placement="bottom"
-                                width="400"
-                                trigger="click">
+                    <el-popover popper-class="accountPop" 
+                                placement="bottom" 
+                                width="400" 
+                                trigger="click" 
+                                hide-after="0">
                         <template #reference>
                             <img src="~assets/img/avatar.jpg" alt="" />
                         </template>
+                        这里是登录组件
                     </el-popover>
                 </div>
                 <div class="userName">点击头像登录</div>
             </div>
         </div>
+        <!--注册框-->
+
     </div>
 </template>
 
 <script>
-    export default {
+export default {
+    components: {},
+    name: 'HeaderBar',
+    data() {
+        return {
+            // 是否显示登录框
+            isAccountPopShow: false,
+            // 是否显示热搜框
+            isSearchPopShow: false,
+            // 搜索内容
+            searchInput: '',
+        }
+    },
+    methods: {
         
     }
+}
 </script>
 
 <style scoped>
@@ -116,4 +154,18 @@
     font-size: 16px;
     color: rgb(100, 100, 100);
 }
+
+.search {
+    margin: 0px 0px 0px 50px;
+}
+
+.el-input {
+    --el-input-focus-border: #c0c4cc;
+    --el-input-focus-border-color: #c0c4cc;
+    --el-input-border-radius: 30px;
+    width: 80%;
+    --el-input-height: 35px;
+}
+
+
 </style>
