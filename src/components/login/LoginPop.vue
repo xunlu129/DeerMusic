@@ -3,7 +3,7 @@
         <el-tabs stretch>
             <el-tab-pane label="二维码登录" lazy>
                 <!--二维码组件-->
-                <QrCode />
+                <QrCode @getUserInfo="getUserInfo" />
                 <div class="tips">提示：请使用网易云音乐app扫码登录</div>
             </el-tab-pane>
             <el-tab-pane label="验证码登录" lazy>
@@ -23,7 +23,11 @@ import VerifyCode from './verifyCodeLogin/VerifyCode.vue';
 export default {
     components: {QrCode, VerifyCode},
     name: 'LoginPop',
-
+    methods: {
+        getUserInfo(info) {
+            this.$emit('getUserInfo', info);
+        },
+  },
 }
 </script>
 
