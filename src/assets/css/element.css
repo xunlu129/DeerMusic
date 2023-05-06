@@ -1,3 +1,45 @@
+/*热搜弹出窗*/
+.searchPop {
+  overflow-y: scroll;
+  margin: 0 !important;
+  width: 350px; 
+  height: 450px; 
+  padding: 12px 12px 0 12px !important;
+}
+
+/*隐藏热搜榜滚动条*/
+.searchPop::-webkit-scrollbar {
+display: none;
+}
+
+/*选择登录方式下面不要横线分隔标签和内容*/
+.el-tabs__nav-wrap::after {
+  height: 0 !important;
+}
+
+/*选择登录方式的下划线*/
+.el-tabs__active-bar {
+  background-color: rgb(215, 134, 79) !important;
+  bottom: 4px !important;
+}
+
+/*选择登录方式悬停文字变色*/
+.el-tabs__item:hover {
+  color: black !important;
+}
+
+/*选择登录方式目标文字变色加粗*/
+.el-tabs__item.is-active {
+  color: black !important;
+  font-weight: 600;
+}
+
+/*选择登录方式标签字号颜色*/
+.el-tabs__item {
+  font-size: 15px !important;
+  color: rgb(82, 82, 82);
+}
+
 .el-pagination.is-background .el-pager li:not(.disabled):hover {
   color: black !important;
   background-color: #f4f4f4 !important;
@@ -15,37 +57,14 @@
   font-weight: normal;
 }
 
-.el-tabs__nav-wrap::after {
-  height: 0 !important;
-}
-
-.el-tabs__active-bar {
-  background-color: #c0c0c0 !important;
-  bottom: 4px !important;
-}
-
-.el-tabs__item:hover {
-  color: black !important;
-}
-
-.el-tabs__item.is-active {
-  color: black !important;
-  font-weight: 600;
-}
-
-.el-tabs__item {
-  font-size: 15px !important;
-  color: rgb(82, 82, 82);
-}
-
 .el-table .cell {
   line-height: 20px !important;
   font-size: 12px !important;
   transform: scale(0.88);
   color: rgb(128, 128, 128) !important;
-  text-overflow: ellipsis !important;
-  overflow: hidden !important;
-  white-space: nowrap !important;
+  text-overflow: ellipsis !important; /*文本溢出时的显示方式为省略号*/
+  overflow: hidden !important;  /*超出部分隐藏*/
+  white-space: nowrap !important; /*单元格中的文本不换行*/
 }
 
 .el-table .cell i:nth-child(1) {
@@ -166,17 +185,6 @@ body .el-table .el-table__row .currentRow {
 
 .el-aside::-webkit-scrollbar-thumb {
   background-color: #e0e0e0;
-}
-
-.searchPop {
-  height: 380px;
-  overflow-y: scroll;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-.searchPop::-webkit-scrollbar {
-  display: none;
 }
 
 .el-table__row {

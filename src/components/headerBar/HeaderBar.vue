@@ -15,19 +15,20 @@
                 <el-popover popper-class="searchPop" 
                             popper-style="width: 350px; height: 450px; padding: 12px 12px 0 12px !important;" 
                             placement="bottom" 
-                            trigger="focus" 
-                            :visible="isSearchPopShow" 
-                            hide-after="0" 
+                            :visible="isSearchPopShow"
                             show-arrow="false">
                     <template #reference>
                         <el-input placeholder="请输入内容" 
-                                    prefix-icon="Search" 
-                                    v-model="searchInput"
-                                    @focus="isSearchPopShow = true"
-                                    @blur="isSearchPopShow = false"></el-input>
+                                  prefix-icon="Search" 
+                                  v-model="searchInput"
+                                  @focus="searchPopShow()"
+                                  @blur="searchPopHide()"></el-input>
                     </template>
                     <!--热搜榜-->
-                    这里是热搜榜
+                    <div style="width: 100%; height: 100%;">
+                        这里是热搜榜
+                        <el-button @click="searchPopHide(); test()">确认</el-button>
+                    </div>
                 </el-popover>
             </div>
         </div>
@@ -57,22 +58,37 @@
 
 <script>
 import Login from 'components/login/LoginPop.vue'
+import { ref } from 'vue';
 
 export default {
     components: {Login},
     name: 'HeaderBar',
-    data() {
-        return {
-            // 是否显示登录框
-            isAccountPopShow: false,
-            // 是否显示热搜框
-            isSearchPopShow: false,
-            // 搜索内容
-            searchInput: '',
+    
+    setup() {
+        let isAccountPopShow = ref(false);
+        let isSearchPopShow = ref(false);
+        let searchInput = ref('');
+
+        const searchPopShow = () => {
+            isSearchPopShow.value = true;
         }
-    },
-    methods: {
-        
+
+        const searchPopHide = () => {
+            isSearchPopShow.value = false;
+        }
+
+        const test = () => {
+            console.log("test");
+        }
+
+        return {
+            isAccountPopShow,
+            isSearchPopShow,
+            searchInput,
+            searchPopShow,
+            searchPopHide,
+            test
+        }
     }
 }
 </script>

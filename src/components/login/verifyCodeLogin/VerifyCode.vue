@@ -13,7 +13,7 @@
             <TimerButton class="btn-primary"></TimerButton>
         </el-form-item>
         <div class="loginButton">
-            <el-button class="login-primary" type="info" plain>登 录</el-button>
+            <el-button class="login-primary" color="rgb(163, 122, 94)" plain>登 录</el-button>
         </div>
   </el-form>
 </template>
