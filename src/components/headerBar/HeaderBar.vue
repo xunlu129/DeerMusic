@@ -27,7 +27,7 @@
                     <!--热搜榜-->
                     <div style="width: 100%; height: 100%;">
                         这里是热搜榜
-                        <el-button @click="searchPopHide(); test()">确认</el-button>
+                        <el-button @click="searchPopHide()">确认</el-button>
                     </div>
                 </el-popover>
             </div>
@@ -41,14 +41,20 @@
                                 placement="bottom" 
                                 width="350" 
                                 trigger="click" 
-                                hide-after="0">
+                                hide-after="0"
+                                v-if="!userInfo.avatarUrl"
+                                @show="isAccountPopShow = true"
+                                @hide="isAccountPopShow = false">
                         <template #reference>
                             <img src="~assets/img/avatar.jpg" alt="" />
                         </template>
-                        <Login />
+                        <Login v-if="isAccountPopShow" 
+                               @getUserInfo="(info) => {userInfo = info; isAccountPopShow = false;}"/>
                     </el-popover>
+                    <img :src="userInfo.avatarUrl" alt="" v-else />
                 </div>
-                <div class="userName">点击头像登录</div>
+                <div class="userName" v-if="userInfo.avatarUrl">{{ userInfo.nickname }}</div>
+                <div class="userName" v-else>点击头像登录</div>
             </div>
         </div>
         <!--注册框-->
@@ -58,38 +64,68 @@
 
 <script>
 import Login from 'components/login/LoginPop.vue'
-import { ref } from 'vue';
 
 export default {
     components: {Login},
     name: 'HeaderBar',
-    
-    setup() {
-        let isAccountPopShow = ref(false);
-        let isSearchPopShow = ref(false);
-        let searchInput = ref('');
-
-        const searchPopShow = () => {
-            isSearchPopShow.value = true;
-        }
-
-        const searchPopHide = () => {
-            isSearchPopShow.value = false;
-        }
-
-        const test = () => {
-            console.log("test");
-        }
-
+    data() {
         return {
-            isAccountPopShow,
-            isSearchPopShow,
-            searchInput,
-            searchPopShow,
-            searchPopHide,
-            test
+            userInfo: {},
+            isAccountPopShow: false,
+            isSearchPopShow: false,
+            searchInput: '',
         }
-    }
+    },
+    methods: {
+        searchPopShow() {
+            this.isSearchPopShow = true;
+        },
+
+        searchPopHide() {
+            this.isSearchPopShow = false;
+        },
+
+        // 获取当前用户信息
+        async getCurrentUserInfo() {
+            var timestamp = Date.parse(new Date());
+            let res = await this.$request('/user/account', {
+                timestamp,
+            });
+            if (res.data.profile != null) {
+                this.userInfo = res.data.profile;
+                // 更新登录状态
+                this.$store.commit('updateLoginState', true);
+                // 将请求到的用户id存入localstorage
+                window.localStorage.setItem('userId', res.data.profile.userId);
+            } else {
+                // 未登录
+                this.$store.commit('updateLoginState', false);
+                // 如果localstorage存有userId就清除
+                if (window.localStorage.getItem('userId')) {
+                    window.localStorage.removeItem('userId');
+                }
+            }
+        }
+    },
+    async created() {
+        this.getCurrentUserInfo();
+
+        if (document.cookie.search('MUSIC_U=') != -1) {
+            // 如果本地存有cookie，则先暂时判定为已登录，
+            // 以解决登录状态下在视频页等需要登录的页面刷新因为登录状态默认为false，
+            // 需要等待获取用户信息请求结束后更新用户状态才有进入视频页的权限，导致被返回到发现音乐页面，体验很差
+            // 后面获取用户信息将再次确认用户是否登录
+            this.$store.commit('updateLoginState', true);
+        }
+    },
+    watch: {
+        '$store.state.isLogin'(current) {
+        // 如果退出登录后数据还没清空，则清空数据
+        if (!current && this.userInfo.nickname) {
+            this.userInfo = {};
+        }
+        },
+    },
 }
 </script>
 
