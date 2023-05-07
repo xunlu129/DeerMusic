@@ -40,6 +40,59 @@ display: none;
   color: rgb(82, 82, 82);
 }
 
+/*取消原来自带的右边线*/
+.el-menu {
+  border: none;
+}
+
+/*侧边栏菜单文本溢出处理*/
+.el-menu-item {
+  display: block;
+  text-overflow: ellipsis;  /*表示文本内容溢出时显示省略号（...）*/
+  overflow: hidden; /*表示溢出内容隐藏不显示*/
+  white-space: nowrap;  /*表示文本内容不换行，即强制一行显示*/
+}
+
+/*侧边栏菜单样式*/
+.el-menu-item {
+  height: 40px !important;
+  line-height: 38px;
+  font-size: 16px !important;
+  margin: 7px 0px;
+  padding: 0 0 0 20px !important;
+}
+
+.el-menu-item * {
+  vertical-align: middle;
+}
+
+/*选中菜单样式*/
+.el-menu-item.is-active {
+  font-weight: 600;
+  background-color: #f6f6f7;
+}
+
+/*侧边栏菜单项悬停和选中背景色*/
+.el-menu-item:focus, .el-menu-item:hover {
+  background-color: #f6f6f7 !important;
+}
+
+/*侧边栏右边界*/
+.el-aside {
+  border-right: 1px solid #ccc;
+  height: calc(80vh);
+}
+
+/*侧边栏滚条宽度*/
+.el-aside::-webkit-scrollbar {
+  width: 6px;
+}
+
+/*侧边栏滚条颜色*/
+.el-aside::-webkit-scrollbar-thumb {
+  background-color: #e0e0e0;
+}
+
 .el-pagination.is-background .el-pager li:not(.disabled):hover {
   color: black !important;
   background-color: #f4f4f4 !important;
@@ -173,19 +226,9 @@ body .el-table .el-table__row .currentRow {
   width: 300px !important;
 }
 
-.el-menu-item {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
 
-.el-aside::-webkit-scrollbar {
-  width: 6px;
-}
 
-.el-aside::-webkit-scrollbar-thumb {
-  background-color: #e0e0e0;
-}
+
 
 .el-table__row {
   width: 100%;
@@ -211,10 +254,7 @@ tr .is-leaf:nth-child(7) {
   padding-right: 0 !important;
 }
 
-.el-menu-item:focus,
-.el-menu-item:hover {
-  background-color: #fff !important;
-}
+
 
 .el-dialog__body {
   padding: 0 20px 40px !important;
