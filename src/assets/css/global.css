@@ -1,13 +1,13 @@
 /*获取验证码按钮*/
 body .btn-primary,
 body .btn-primary:focus {
-  background-color: rgb(163, 122, 94);
+  background-color: rgb(186, 140, 69);
   color: white;
   transition: 0.1s all ease;  /*0.1s 表示过渡时间为 0.1 秒，all 表示所有属性都会产生过渡效果，ease 表示过渡效果是渐变的*/
   border: none;
 }
 body .btn-primary:hover {
-  background-color: rgb(215, 134, 79);
+  background-color: rgb(216, 159, 85);
   color: white;
 }
 
@@ -27,17 +27,4 @@ body .btn-primary:hover {
 .el-drawer__container {
   height: calc(80vh - 55px) !important;
 }
-.el-slider__bar {
-  background-color: #ff4e4e !important;
-}
-.el-slider__button {
-  border: 1px solid #ccc !important;
-  width: 10px !important;
-  height: 10px !important;
-}
-.el-slider__runway {
-  height: 5px !important;
-}
-.el-slider__bar {
-  height: 5px !important;
-}
+

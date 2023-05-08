@@ -8,6 +8,8 @@ export default createStore({
         createdMusicList: [],
         // 已收藏的歌单
         collectMusicList: [],
+        // 是否正在播放音乐
+        isPlay: false,
     },
     mutations: {
         //更新登录状态
@@ -21,6 +23,10 @@ export default createStore({
         // 更新已收藏的歌单
         updateCollectMusicList(state, collectMusicList) {
             state.collectMusicList = collectMusicList;
+        },
+        // 修改播放状态
+        changePlayState(state, isPlay) {
+            state.isPlay = isPlay;
         },
     }
 })

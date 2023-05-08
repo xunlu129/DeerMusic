@@ -19,7 +19,7 @@ display: none;
 
 /*选择登录方式的下划线*/
 .el-tabs__active-bar {
-  background-color: rgb(215, 134, 79) !important;
+  background-color: rgb(251, 147, 72) !important;
   bottom: 4px !important;
 }
 
@@ -80,7 +80,7 @@ display: none;
 /*侧边栏右边界*/
 .el-aside {
   border-right: 1px solid #ccc;
-  height: calc(80vh);
+  height: calc(100vh - 145px);
 }
 
 /*侧边栏滚条宽度*/
@@ -91,6 +91,29 @@ display: none;
 /*侧边栏滚条颜色*/
 .el-aside::-webkit-scrollbar-thumb {
   background-color: #e0e0e0;
+}
+
+/*进度条球球样式*/
+.el-slider__button {
+  border: 1px solid #ccc !important;
+  width: 10px !important;
+  height: 10px !important;
+}
+
+/*进度条灰色地带*/
+.el-slider__runway {
+  height: 5px !important;
+}
+
+/*进度条已走地带*/
+.el-slider__bar {
+  height: 5px !important;
+  background-color: rgb(251, 147, 72) !important;
+}
+
+/*备案号提示气泡权重搞大点，不然会被底部栏盖住*/
+.el-popper.is-dark {
+  z-index: 20000 !important;
 }
 
 .el-pagination.is-background .el-pager li:not(.disabled):hover {
@@ -165,27 +188,6 @@ tbody .el-table th,
   background-color: #e5e5e5 !important;
 }
 
-/* .el-slider__bar {
-    background-color: #ff4e4e !important;
-}
-
-.el-slider__button {
-    border: 1px solid #ccc !important;
-    width: 10px !important;
-    height: 10px !important;
-}
-
-.el-slider__runway {
-    height: 5px ! important;
-}
-
-.el-slider__bar {
-    height: 5px !important;
-} */
-
-.el-slider__button-wrapper {
-  top: -16px !important;
-}
 
 .el-drawer__body {
   overflow: auto;
@@ -209,10 +211,6 @@ tbody .el-table th,
 .el-table th {
   padding: 5px 0;
 }
-
-/* .el-slider__button-wrapper {
-    height: 4px;
-} */
 
 body .el-table .el-table__row .currentRow {
   color: #ec4141 !important;
@@ -289,9 +287,4 @@ tr .is-leaf:nth-child(7) {
 
 .sortPop::-webkit-scrollbar {
   width: 6px;
-}
-
-/* 拖动条不能缩放，会有偏移问题 */
-.el-slider {
-  zoom: 0.8 !important;
 }
