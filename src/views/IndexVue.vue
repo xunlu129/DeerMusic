@@ -48,15 +48,18 @@
 
             </el-main>
         </el-container>
+        <BottomControl></BottomControl>
     </el-container>
 </template>
 
 <script>
-import HeaderBar from "components/headerBar/HeaderBar.vue"
+import HeaderBar from "@/components/headerBar/HeaderBar.vue"
+import BottomControl from "@/components/BottomControl/BottomControl.vue";
 
 export default {
     components: {
         HeaderBar,
+        BottomControl,
     },
     data() {
         return {
