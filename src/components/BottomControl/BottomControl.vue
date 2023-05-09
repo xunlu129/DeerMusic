@@ -1,6 +1,6 @@
 <template>
     <div class="bottomControl">
-        <audio src="http://m801.music.126.net/20230508151725/1091255275e857df008440e62feeae76/jdymusic/obj/wo3DlMOGwrbDjj7DisKw/25399030527/dadb/06f0/01e8/1524d4cc5a5f8c9ef493b918cc5b9777.mp3"
+        <audio :src="musicUrl"
                ref="audioPlayer"
                autoplay></audio>
         <!--左边-->
@@ -40,11 +40,11 @@
             </div>
             <!--进度条-->
             <div class="progressBar">
-                <span class="currentTime">00:00</span>
+                <span class="currentTime">05:20</span>
                 <el-slider class="progressSlider"
                            v-model="timeProgress"
                            :show-tooltip="false"></el-slider>
-                <span class="totalTime">05:20</span>
+                <span class="totalTime">13:14</span>
             </div>
         </div>
         <!--右边-->
@@ -79,6 +79,9 @@ export default {
     name: 'BottomControl',
     data() {
         return {
+            musicList: [],
+            musicUrl: "",
+            musicDetail: {},
             // 播放模式（顺序播放，随机播放）
             // order random
             playType: "order",
@@ -104,7 +107,7 @@ export default {
     padding: 13px 20px;
     box-shadow: 0px -1px 3px rgba(0, 0, 0, 0.2);
     z-index: 10000;
-    /* background-color: #fff; */
+    background-color: #fff;
     display: flex;
     justify-content: space-between;
 }

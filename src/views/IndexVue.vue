@@ -9,7 +9,7 @@
                 <el-menu active-text-color="black"
                          text-color="rgb(75, 75, 75)"
                          router :default-active="defaultActive">
-                    <el-menu-item index="/index">
+                    <el-menu-item index="/discover">
                         <i class="iconfont icon-yinle"></i>
                         <span>发现音乐</span>
                     </el-menu-item>
@@ -45,7 +45,9 @@
             </el-aside>
             <!-- 主体内容 -->
             <el-main>
-
+                <!-- 给router-view添加key有可能对性能有一定的损耗，
+                但是可以解决push同一个地址不同参数时不会重新渲染router-view的问题 -->
+                <router-view class="routerView" :key="$route.fullPath"></router-view>
             </el-main>
         </el-container>
         <BottomControl></BottomControl>
@@ -91,7 +93,7 @@ export default {
                 uid: window.localStorage.getItem("userId"),
                 timestamp,
             });
-            console.log(res);
+            console.log("用户歌单: ", res);
             // 对数据进行处理分类
             res = res.data.playlist;
             let index = res.findIndex((item) => item.subscribed == true);
@@ -148,4 +150,7 @@ export default {
   color: rgb(150, 150, 150);
 }
 
+.el-main {
+  padding: 0;
+}
 </style>
