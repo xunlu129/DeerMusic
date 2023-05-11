@@ -61,37 +61,37 @@ export default {
 
 <style scoped>
 .recommendContainer {
-  display: flex;
-  justify-content: center;
+    display: flex;
+    justify-content: center;
 }
 
 .recommend {
-  max-width: 1500px;
+    max-width: 1500px;
 }
 
 .carousel {
-  width: 100%;
+    width: 100%;
 }
 
 .el-carousel {
-  margin: auto;
-  width: 1080px;
+    margin: auto;
+    width: 1080px;
 }
 
 .el-carousel__item {
-  border-radius: 10px;
+    border-radius: 10px;
 }
 
 .el-carousel__item img {
-  height: 100%;
+    height: 100%;
 }
 
 .recommendMusicList {
-  margin: 20px 10px;
+    margin: 20px 10px;
 }
 
 .recommendMusicList h2 {
-  color: #373737;
+    color: #373737;
 }
 
 .icon-arrow-right-bold {

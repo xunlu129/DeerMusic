@@ -18,7 +18,7 @@
                         <span>视频</span>
                     </el-menu-item>
                     <el-menu-item index="/favorites">
-                        <i class="iconfont icon-more"></i>
+                        <i class="iconfont icon-wodeshoucang"></i>
                         <span>收藏</span>
                     </el-menu-item>
                     <el-menu-item index="/recommendmusic">

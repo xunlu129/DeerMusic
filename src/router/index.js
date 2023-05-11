@@ -5,6 +5,7 @@ const Recommend = () => import('views/discover/discoverChildren/RecommendView.vu
 const MusicList = () => import('views/discover/discoverChildren/MusicListView.vue')
 const Ranking = () => import('views/discover/discoverChildren/RankingView.vue')
 const Singer = () => import('views/discover/discoverChildren/SingerView.vue')
+const MusicListIndex = () => import('views/discover/discoverChildren/musicListChildren/MusicListIndex.vue')
 
 const routes = [
     {path: '/', redirect: '/index'},
@@ -22,7 +23,10 @@ const routes = [
                     {
                         path: '/discover/musiclist',
                         component: MusicList,
-                        
+                        redirect: '/discover/musiclist/musiclistindex',
+                        children: [
+                            { path: '/discover/musiclist/musiclistindex', component: MusicListIndex },
+                        ]
                     },
                     { path: '/discover/ranking', component: Ranking },
                     { path: '/discover/singer', component: Singer },

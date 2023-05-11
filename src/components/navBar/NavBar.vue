@@ -61,20 +61,25 @@ export default {
     top: 0;
     background-color: #fff;
     width: 100%;
-    color: rgb(49, 49, 49);
+    color: rgb(60, 60, 60);
     align-items: center;
     padding: 20px 0 26px 40px;
 }
 
 .barItem {
-  margin: 0 15px;
-  text-align: center;
-  cursor: pointer;
+    margin: 0 15px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.barItem:hover {
+    color: black;
 }
 
 .active {
     font-size: 20px;
-    color: black;
+    color: rgb(40, 40, 40);
     font-weight: 600;
     padding-bottom: 7px;
     border-bottom: 4px solid rgb(216, 159, 85);

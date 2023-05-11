@@ -78,7 +78,7 @@ export default {
 }
 
 .listCardItem {
-    width: 17%;
+    width: 17.5%;
     margin: 0 3% 30px 0;
     overflow: hidden;
     cursor: pointer;

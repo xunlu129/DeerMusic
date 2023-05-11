@@ -116,21 +116,41 @@ display: none;
   z-index: 20000 !important;
 }
 
+/*歌单分类气泡样式*/
+.sortPop {
+  position: absolute;
+  z-index: 0 !important;
+  height: 40%;
+  overflow-y: scroll;
+}
+
+/*歌单分类气泡滚动条宽度*/
+.sortPop::-webkit-scrollbar {
+  width: 6px;
+}
+
+/*分页按钮悬停时样式*/
+.el-pagination.is-background .btn-next:hover,
+.el-pagination.is-background .btn-prev:hover,
 .el-pagination.is-background .el-pager li:not(.disabled):hover {
   color: black !important;
   background-color: #f4f4f4 !important;
 }
-.el-pagination.is-background .el-pager li:not(.disabled).active {
-  background-color: #ec4141 !important;
+
+/*当前选中分页按钮样式*/
+.el-pagination.is-background .el-pager li:not(.disabled).is-active {
+  background-color: #D89F55 !important;
   color: white !important;
 }
 
+/*分页的全部按钮的总体样式*/
 .el-pagination.is-background .btn-next,
 .el-pagination.is-background .btn-prev,
 .el-pagination.is-background .el-pager li {
   background-color: #fff !important;
   border: 1px solid #ddd;
   font-weight: normal;
+  border-radius: 5px;
 }
 
 .el-table .cell {
@@ -278,13 +298,3 @@ tr .is-leaf:nth-child(7) {
   top: unset !important;
 }
 
-.sortPop {
-  position: absolute;
-  z-index: 0 !important;
-  height: 40%;
-  overflow-y: scroll;
-}
-
-.sortPop::-webkit-scrollbar {
-  width: 6px;
-}

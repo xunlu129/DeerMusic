@@ -22,13 +22,13 @@
             <div class="buttons">
                 <span @click="playType = playType == 'order' ? 'random' : 'order'">
                     <i class="iconfont icon-xunhuan" v-if="playType == 'order'"></i>
-                    <i class="iconfont icon-suiji1" v-else></i>
+                    <i class="iconfont icon-suiji" v-else></i>
                 </span>
                 <span>
                     <i class="iconfont icon-shangyishou"></i>
                 </span>
                 <span>
-                    <i class="iconfont icon-icon_play" v-if="!this.$store.state.isPlay"></i>
+                    <i class="iconfont icon-bofang" v-if="!this.$store.state.isPlay"></i>
                     <i class="iconfont icon-zantingtingzhi" v-else></i>
                 </span>
                 <span>
