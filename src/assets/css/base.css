@@ -2,7 +2,7 @@
 @import url('./global.css');
 @import url('./normalize.css');
 @import url('../font/font.css');
-@import '//at.alicdn.com/t/c/font_4061709_tpf8c6pz3xk.css';
+@import 'https://at.alicdn.com/t/c/font_4061709_xac8fprhkre.css';
 
 *::-webkit-scrollbar {
   width: 8px;

@@ -49,7 +49,8 @@ export default {
         },
         // 点击歌单封面的回调
         clickListCardItem(id) {
-            console.log(id);
+            // console.log(id);
+            this.$router.push({ name: "musicListDetail", params: { id } });
         },
     },
     created() {

@@ -22,9 +22,5 @@ body .btn-primary:hover {
 * {
   scrollbar-width: thin;
 }
-.el-drawer.ltr,
-.el-drawer.rtl,
-.el-drawer__container {
-  height: calc(80vh - 55px) !important;
-}
+
 

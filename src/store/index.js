@@ -22,6 +22,8 @@ export default createStore({
         currentTime: 0,
         // 音乐是否在加载中
         isMusicLoad: false,
+        // 用户喜欢的音乐列表
+        likeMusicList: [],
     },
     mutations: {
         //更新登录状态
@@ -31,10 +33,12 @@ export default createStore({
         // 更新用户创建的歌单
         updateCreatedMusicList(state, createdMusicList) {
             state.createdMusicList = createdMusicList;
+            // console.log("用户创建的歌单: ", state.createdMusicList);
         },
         // 更新已收藏的歌单
         updateCollectMusicList(state, collectMusicList) {
             state.collectMusicList = collectMusicList;
+            // console.log("已收藏的歌单: ", state.collectMusicList);
         },
         // 修改播放状态
         changePlayState(state, isPlay) {
@@ -66,6 +70,11 @@ export default createStore({
         // 更新音乐的加载状态
         updateMusicLoadState(state, isLoad) {
             state.isMusicLoad = isLoad;
+        },
+        // 更新用户喜欢的音乐列表
+        updateLikeMusicList(state, likeMusicList) {
+            state.likeMusicList = likeMusicList;
+            // console.log("喜欢的音乐列表: ", state.likeMusicList);
         },
     }
 })

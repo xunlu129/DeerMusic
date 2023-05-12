@@ -9,7 +9,11 @@
 
 /*隐藏热搜榜滚动条*/
 .searchPop::-webkit-scrollbar {
-display: none;
+  display: none;
+}
+
+.el-tabs {
+  --el-tabs-header-height: 50px !important;
 }
 
 /*选择登录方式下面不要横线分隔标签和内容*/
@@ -21,6 +25,7 @@ display: none;
 .el-tabs__active-bar {
   background-color: rgb(251, 147, 72) !important;
   bottom: 4px !important;
+  height: 3px !important;
 }
 
 /*选择登录方式悬停文字变色*/
@@ -36,7 +41,7 @@ display: none;
 
 /*选择登录方式标签字号颜色*/
 .el-tabs__item {
-  font-size: 15px !important;
+  font-size: 17px !important;
   color: rgb(82, 82, 82);
 }
 
@@ -153,59 +158,81 @@ display: none;
   border-radius: 5px;
 }
 
+/*歌单表格样式*/
 .el-table .cell {
-  line-height: 20px !important;
-  font-size: 12px !important;
-  transform: scale(0.88);
-  color: rgb(128, 128, 128) !important;
   text-overflow: ellipsis !important; /*文本溢出时的显示方式为省略号*/
   overflow: hidden !important;  /*超出部分隐藏*/
   white-space: nowrap !important; /*单元格中的文本不换行*/
 }
 
-.el-table .cell i:nth-child(1) {
-  font-size: 12px;
-  font-weight: bold;
-  margin-right: 5px;
+/*将全局变量中定义的tr鼠标手指改回箭头*/
+.el-table tr {
+  cursor: auto !important;
 }
 
+/*歌单表格行宽*/
+.el-table__row {
+  width: 100%;
+}
+
+/* .el-table__row td:nth-child(8) {
+  display: none;
+}
+
+tr .is-leaf:nth-child(8) {
+  display: none;
+} */
+
+/*隐藏歌单表格的水平滚动条*/
+.el-table--scrollable-x .el-table__body-wrapper {
+  overflow-x: hidden !important;
+}
+
+/*歌单表格图标那两列的样式*/
+.el-table .cell i:nth-child(1) {
+  font-size: 18px;
+}
+
+/*歌单表格表头样式*/
 .el-table th > .cell {
   font-weight: normal !important;
-  font-size: 12px !important;
-  transform: scale(0.88);
   color: rgb(148, 148, 148) !important;
-  margin-bottom: 5px;
 }
 
-.el-table__row td:nth-child(3) .cell {
+/*歌曲标题加黑一点*/
+.el-table__row td:nth-child(4) .cell {
   color: rgb(36, 36, 36) !important;
 }
 
-.el-table--mini td,
-.el-table--mini th {
-  padding: 3px 0 !important;
-}
-
+/*去掉每行之间的线条*/
 .el-table td,
 .el-table th.is-leaf {
   border: none !important;
 }
 
+/*对调一下斑马纹的显示行，原来是第一行白，第二行灰*/
 .el-table__body tr.el-table__row--striped td {
   background-color: #fff !important;
 }
-
 tbody .el-table th,
 .el-table tr {
   background-color: #f9f9f9 !important;
 }
-
 .el-table--enable-row-hover .el-table__body tr:hover > td {
   background-color: #f0f1f2 !important;
 }
-
 .el-table__body tr.current-row > td {
   background-color: #e5e5e5 !important;
+}
+
+/*正在播放音乐行字体颜色*/
+body .el-table .el-table__row .currentRow {
+  color: #D89F55 !important;
+}
+
+/*隐藏表格最下面的灰边*/
+.el-table__inner-wrapper::before {
+  background-color: #fff !important;
 }
 
 
@@ -228,18 +255,19 @@ tbody .el-table th,
 }
 
 .el-drawer .el-table td,
-.el-table th {
-  padding: 5px 0;
-}
 
-body .el-table .el-table__row .currentRow {
-  color: #ec4141 !important;
-}
 
 .el-drawer__wrapper {
   bottom: auto !important;
 }
 
+.el-drawer.ltr,
+.el-drawer.rtl,
+.el-drawer__container {
+  height: calc(80vh - 55px) !important;
+}
+
+/*从右到左排列的标签样式*/
 .rtl {
   width: 300px !important;
 }
@@ -248,21 +276,9 @@ body .el-table .el-table__row .currentRow {
 
 
 
-.el-table__row {
-  width: 100%;
-}
 
-.el-table__row td:nth-child(7) {
-  display: none;
-}
 
-tr .is-leaf:nth-child(7) {
-  display: none;
-}
 
-.el-table--scrollable-x .el-table__body-wrapper {
-  overflow-x: hidden !important;
-}
 
 .right .el-slider__button-wrapper {
   width: 10px !important;

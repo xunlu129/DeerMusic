@@ -121,8 +121,8 @@ export default {
         },
         // 点击歌单的回调
         clickListCardItem(id) {
-            console.log(id);
-            // this.$router.push({ name: "musicListDetail", params: { id } });
+            // console.log(id);
+            this.$router.push({ name: "musicListDetail", params: { id } });
         },
         //当页数发生改变时
         pageChange(page) {

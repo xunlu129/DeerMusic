@@ -93,7 +93,7 @@ export default {
                 uid: window.localStorage.getItem("userId"),
                 timestamp,
             });
-            console.log("用户歌单: ", res);
+            // console.log("用户歌单: ", res);
             // 对数据进行处理分类
             res = res.data.playlist;
             let index = res.findIndex((item) => item.subscribed == true);
@@ -105,6 +105,24 @@ export default {
             this.$store.commit("updateCreatedMusicList", this.createdMusicList);
             // 将收藏的歌单上传至vuex
             this.$store.commit("updateCollectMusicList", this.collectedMusicList);
+        },
+        // 获取喜欢音乐列表
+        async getLikeMusicList() {
+            if (!this.$store.state.isLogin) {
+                // 说明已经退出登录
+                this.$message.error("请先进行登录操作");
+                return;
+            }
+            // 获取时间戳
+            var timestamp = Date.parse(new Date());
+            // 因为喜欢音乐列表实时性较高，为了避免接口缓存，在请求后面加上一个时间戳
+            let res = await this.$request("/likelist", {
+                uid: window.localStorage.getItem("userId"),
+                timestamp,
+            });
+            let likeMusicList = res.data.ids;
+            // 将喜欢列表提交到vuex 供歌单中显示喜欢使用
+            this.$store.commit("updateLikeMusicList", likeMusicList);
         },
     },
     watch: {
@@ -124,6 +142,7 @@ export default {
         "$store.state.isLogin"(current) {
             if (current) {
                 this.getUserMusicList();
+                this.getLikeMusicList();
             } else {
                 // 清空收藏和创建歌单
                 this.createdMusicList = [];
@@ -152,5 +171,12 @@ export default {
 
 .el-main {
   padding: 0;
+}
+
+.routerView {
+    padding: 0 20px;
+    margin: 0;
+    width: 100%;
+    height: calc(100vh - 145px);
 }
 </style>
