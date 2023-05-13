@@ -69,7 +69,7 @@
         </div>
         <!--歌曲列表-->
         <div class="songList">
-            <el-tabs model-value="first">
+            <el-tabs model-value="first" @tab-click="clickTab">
                 <el-tab-pane label="歌曲列表" name="first">
                     <!--表格-->
                     <el-table :data="musicListDetail.tracks"
@@ -106,7 +106,45 @@
                     <div class="placeholder" v-else></div>
                 </el-tab-pane>
                 <el-tab-pane label="评论" name="second">
-
+                    <div class="commentList"
+                         v-if="comments.comments"
+                         v-loading="isCommentLoading">
+                        <!--精彩评论-->
+                        <CommentCompn :commentType="'musicList'"
+                                      :comments="comments.hotComments"
+                                      :commentId="musicListDetail.id + ''"
+                                      :isInputShow="isHotCommentCompnShow(comments.hotComments) ? true : false"
+                                      v-if="isHotCommentCompnShow(comments.hotComments)"
+                                      @scrollToComment="scrollToComment"
+                                      ref="hotComments">
+                            <template #title>
+                                <div>精彩评论</div>
+                            </template>
+                        </CommentCompn>
+                        <!--最新评论-->
+                        <CommentCompn :comments="comments.comments"
+                                      :commentType="'musicList'"
+                                      :commentId="musicListDetail.id + ''"
+                                      :isInputShow="isNewCommentCompnShow(comments.hotComments) ? true : false"
+                                      @scrollToComment="scrollToComment"
+                                      @transToHotComment="
+                                                (info) =>
+                                                $refs.hotComments.replyComment(info.commentId, info.nickName)">
+                            <template #title>
+                                <div>最新评论</div>
+                            </template>
+                        </CommentCompn>
+                    </div>
+                    <!-- 分页 -->
+                    <div class="page" v-show="comments.comments && comments.comments.length != 0">
+                        <el-pagination background
+                                       layout="prev, pager, next"
+                                       :total="comments.total"
+                                       :page-size="50"
+                                       :current-page="currentCommentPage"
+                                       @current-change="commentPageChange">
+                        </el-pagination>
+                    </div>
                 </el-tab-pane>
                 <el-tab-pane label="收藏者" name="third">
                     
@@ -118,9 +156,13 @@
 
 <script>
 import { formatDate, handleNum, handleMusicTime } from "plugins/utils";
+import CommentCompn from "@/components/comment/CommentCompn.vue";
 
 export default {
     name: "MusicListDetail",
+    components: {
+        CommentCompn,
+    },
     data() {
         return {
             // 歌单列表数据详情
@@ -141,6 +183,12 @@ export default {
             isMore: false,
             // 是否禁止滚动加载
             scrollLoadDisabled: false,
+            // 评论
+            comments: {},
+            // 评论是否在加载
+            isCommentLoading: false,
+            // 当前评论页数
+            currentCommentPage: 1,
         }
     },
     methods: {
@@ -176,7 +224,7 @@ export default {
             if (this.isMore == false) return;
             this.scrollLoadDisabled = true;
             let res = await this.$request("/song/detail", { ids });
-            console.log("歌曲详情:", res);
+            // console.log("歌曲详情:", res);
             // 处理时间
             res.data.songs.forEach((item, index) => {
                 res.data.songs[index].dt = handleMusicTime(item.dt);
@@ -192,6 +240,36 @@ export default {
             } else {
                 this.isMore = false;
             }
+        },
+        // 获取歌单评论
+        async getMusicListComment(type) {
+            // 获取时间戳
+            var timestamp = Date.parse(new Date());
+            this.isCommentLoading = true;
+            if (type == "changePage") {
+                this.scrollToComment();
+            }
+            let res = await this.$request("/comment/playlist", {
+                id: this.$route.params.id,
+                offset: (this.currentCommentPage - 1) * 50,
+                limit: 50,
+                timestamp,
+            });
+            console.log("评论详情: ", res);
+            if (res.data.code !== 200) {
+                this.$message.error("获取评论失败,请稍后重试!");
+            }
+            this.comments = res.data;
+            this.isCommentLoading = false;
+        },
+        scrollToComment() {
+            let musicListDetail = document.querySelector(".musicListDetail");
+            let listInfo = document.querySelector(".listInfo");
+            // 将父容器musicListDetail标签滚动到子容器listInfo标签的下面
+            musicListDetail.scrollTo({
+                behavior: "smooth",
+                top: listInfo.clientHeight - 20,
+            });
         },
 
         // 事件函数
@@ -248,7 +326,42 @@ export default {
             // console.log(ids);
             this.getMusicDetail(ids);
         },
+        // 点击el-tab-pane的回调
+        clickTab(e) {
+            // console.log(e.index);
+            if (e.index == 1 && !this.comments.comments) {
+                this.getMusicListComment();
+            }
+        },
+        // 评论点击翻页的回调
+        commentPageChange(page) {
+            this.currentCommentPage = page;
+            this.getMusicListComment("changePage");
+        },
 
+        // 精彩评论组件是否显示
+        isHotCommentCompnShow(comments) {
+            if (comments) {
+                if (comments.length != 0) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        },
+        // 最新评论组件是否显示
+        isNewCommentCompnShow(comments) {
+            if (this.currentCommentPage != 1) {
+                return true;
+            } else {
+                if (comments) {
+                    if (comments.length == 0) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        },
         // 格式化时间
         showDate(time) {
             // 1、先将时间戳转成Date对象
@@ -461,6 +574,10 @@ export default {
     white-space: nowrap;
 }
 
+.songList {
+    margin: 0 20px;
+}
+
 .icon-yixihuan:hover {
     color: #D73535 !important;
 }
@@ -479,4 +596,13 @@ export default {
     height: 50px;
 }
 
+
+
+
+.page {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 40px;
+}
 </style>

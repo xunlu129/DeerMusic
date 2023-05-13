@@ -209,6 +209,6 @@ export default {
     width: 100%;
     display: flex;
     justify-content: center;
-    padding-bottom: 20px;
+    padding-bottom: 40px;
 }
 </style>
