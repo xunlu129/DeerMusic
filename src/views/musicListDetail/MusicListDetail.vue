@@ -86,14 +86,19 @@
                         <el-table-column label="" width="42">
                             <!--喜欢按钮-->
                             <template #default="scope">
-                                <i class="iconfont icon-xihuan" 
-                                   v-if="$store.state.likeMusicList.findIndex(musicId => musicId == scope.row.id) == -1"></i>
-                                <i class="iconfont icon-yixihuan red" v-else></i>
+                                <div @click="likeMusic(scope.row.id)">
+                                    <i class="iconfont icon-xihuan" 
+                                       v-if="$store.state.likeMusicList.findIndex(
+                                            musicId => musicId == scope.row.id) == -1"></i>
+                                    <i class="iconfont icon-yixihuan red" v-else></i>
+                                </div>
                             </template>
                         </el-table-column>
                         <el-table-column label="" width="45">
                             <!--下载按钮-->
-                            <i class="iconfont icon-download"></i>
+                            <template #default="scope">
+                                <i class="iconfont icon-download" @click="downloadCurrentMusic(scope.row, )"></i>
+                            </template>
                         </el-table-column>
                         <el-table-column prop="name" label="音乐标题" min-width="350"></el-table-column>
                         <el-table-column prop="ar[0].name" label="歌手" min-width="120"></el-table-column>
@@ -114,8 +119,9 @@
                                       :comments="comments.hotComments"
                                       :commentId="musicListDetail.id + ''"
                                       :isInputShow="isHotCommentCompnShow(comments.hotComments) ? true : false"
-                                      v-if="isHotCommentCompnShow(comments.hotComments)"
                                       @scrollToComment="scrollToComment"
+                                      @getComment="getMusicListComment"
+                                      v-if="isHotCommentCompnShow(comments.hotComments)"
                                       ref="hotComments">
                             <template #title>
                                 <div>精彩评论</div>
@@ -127,6 +133,7 @@
                                       :commentId="musicListDetail.id + ''"
                                       :isInputShow="isNewCommentCompnShow(comments.hotComments) ? true : false"
                                       @scrollToComment="scrollToComment"
+                                      @getComment="getMusicListComment"
                                       @transToHotComment="
                                                 (info) =>
                                                 $refs.hotComments.replyComment(info.commentId, info.nickName)">
@@ -271,6 +278,84 @@ export default {
                 top: listInfo.clientHeight - 20,
             });
         },
+        // 点击喜欢音乐
+        async likeMusic(musicId) {
+            // 判断是否登录
+            if (!this.$store.state.isLogin) {
+                this.$message.warning("只有登陆后才能点赞哦!");
+                return;
+            }
+            // console.log(musicId);
+            // 判断是否已经喜欢该音乐，flag为true就表示还没喜欢，false表示已经喜欢了
+            let flag = this.$store.state.likeMusicList.findIndex(id => id == musicId) == -1;
+            // console.log(flag);
+            // 获取时间戳
+            var timestamp = Date.parse(new Date());
+            let res = await this.$request("/like", {
+                id: musicId,
+                like: flag,
+                timestamp,
+            });
+            if (res.data.code == 200) {
+                this.updateLikeMusicList();
+            } else {
+                this.$message.error("喜欢失败,请稍后重试!");
+            }
+        },
+        // 更新喜欢音乐列表
+        async updateLikeMusicList() {
+            // 获取时间戳
+            var timestamp = Date.parse(new Date());
+            // 因为喜欢音乐列表实时性较高，为了避免接口缓存，在请求后面加上一个时间戳
+            let res = await this.$request("/likelist", {
+                uid: window.localStorage.getItem("userId"),
+                timestamp,
+            });
+            let likeMusicList = res.data.ids;
+            // 将喜欢列表提交到vuex 供歌单中显示喜欢使用
+            this.$store.commit("updateLikeMusicList", likeMusicList);
+        },
+        // 点击下载按钮的回调
+        async downloadCurrentMusic(musicDetail) {
+            let id = musicDetail.id;
+            // 获取音乐URL
+            let result = await this.$request("/song/url", { id });
+            // console.log(result);
+            if (result.data.data[0].url == null) {
+                this.$message.error("该歌曲暂无版权，无法下载!");
+                return;
+            }
+            let musicURL = result.data.data[0].url;
+            let musicType = result.data.data[0].type.toLowerCase();
+            // console.log("下载的音乐详情: ", musicDetail, "下载的音乐URL: ", musicURL);
+            // 匹配资源的域名
+            let url = musicURL.match(/http.*?\.net/);
+            // 匹配域名名称，并匹配对应的代理
+            let serve = url[0].match(/http:\/(\S*).music/)[1];
+            if (
+                serve != "/m7" &&
+                serve != "/m701" &&
+                serve != "/m8" &&
+                serve != "/m801"
+            ) {
+                // 没有对应的代理
+                this.$message.error("匹配不到对应的代理,下载失败!");
+                return;
+            }
+            // 截取后面的参数
+            let params = musicURL.slice(url[0].length);
+            let downloadMusicInfo = {
+                url: serve + params,
+                name:
+                    musicDetail.name +
+                    " - " +
+                    musicDetail.ar[0].name +
+                    "." +
+                    musicType,
+            };
+            // console.log("下载音乐信息: ", downloadMusicInfo);
+            this.$store.commit("updateDownloadMusicInfo", downloadMusicInfo);
+        },
 
         // 事件函数
         // 将个位数序号前面加个0
@@ -310,7 +395,7 @@ export default {
                 this.$message.error("请先进行登录操作!");
                 return;
             }
-            console.log("加载所有音乐");
+            // console.log("加载所有音乐");
             let arr = this.musicListDetail.trackIds.slice(
                 this.musicListDetail.tracks.length
             );

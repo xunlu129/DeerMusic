@@ -7,9 +7,10 @@
                     maxlength="140"
                     show-word-limit
                     v-model="commentInput"
-                    placeholder="留下你的评论"></el-input>
+                    placeholder="留下你的评论"
+                    @input="inputComment"></el-input>
             <div class="submitCommentButton">
-                <el-button round class="submitComment">
+                <el-button round class="submitComment" @click="commentMode ? submitComment() : submitReplyComment()">
                     评论
                 </el-button>
             </div>
@@ -40,7 +41,8 @@
                         {{ showDate(item.time) }}
                     </div>
                     <div class="commentButtons">
-                        <div :class="item.liked ? 'likeCurrentComment' : ''">
+                        <div :class="item.liked ? 'likeCurrentComment' : ''"
+                             @click="likeCurrentComment(item.liked, item.commentId)">
                             <i class="iconfont icon-good"></i>
                             {{ item.likedCount }}
                         </div>
@@ -74,7 +76,7 @@ export default {
                 return "";
             }
         },
-        // 评论Id
+        // 评论对象的Id
         commentId: {
             type: String,
             default() {
@@ -108,15 +110,132 @@ export default {
             floorCommentInputLength: 0,
             // 用于暂存楼层评论id
             floorCommentId: "",
+            // 用于暂存楼层评论用户昵称
+            floorCommentNickname: "",
         }
     },
     methods: {
-        showDate(value) {
-            // 1、先将时间戳转成Date对象
-            const date = new Date(value);
-            // 2、将date进行格式化
-            return formatDate(date, "yyyy-MM-dd");
+        // 点击提交评论的回调
+        async submitComment() {
+            // 判断是否登录
+            if (!this.$store.state.isLogin) {
+                this.$message.warning("只有登陆后才能评论哦!");
+                return;
+            }
+            // 先判断评论内容是否为空
+            if (this.commentInput == "") {
+                this.$message.warning("评论内容不能为空哦!");
+                return;
+            }
+            // 判断评论的类型
+            let type;
+            switch (this.commentType) {
+                case "music":
+                    type = 0;
+                    break;
+                case "mv":
+                    type = 1;
+                    break;
+                case "musicList":
+                    type = 2;
+                    break;
+                case "album":
+                    type = 3;
+                    break;
+                case "video":
+                    type = 5;
+                    break;
+            }
+            let res = await this.$request("/comment", {
+                t: 1,
+                id: this.commentId,
+                type,
+                content: this.commentInput,
+            }).catch((err) => {
+                // console.log(err.response.data.msg);
+                this.$message.error(err.response.data.msg);
+            });
+            if (!res) {
+                return;
+            }
+            // console.log("发表普通评论: ", res);
+            if (res.data.code == 200) {
+                // 清空文本框
+                // 如果是单曲卡片评论，还需要关闭卡片
+                if (this.commentType == "music") {
+                    this.isCommentDialogShow = false;
+                }
+                this.commentInput = "";
+                this.$emit("getComment");
+            } else {
+                this.$message.error("评论失败,请稍后重试!");
+            }
         },
+
+        // 点击提交回复评论的回调
+        async submitReplyComment() {
+            // console.log("提交回复评论");
+            // 判断是否登录
+            if (!this.$store.state.isLogin) {
+                this.$message.warning("只有登陆后才能评论哦!");
+                return;
+            }
+            if (this.commentInput.length == this.floorCommentInputLength) {
+                this.$message.error("评论内容不能为空哦!");
+                return;
+            }
+            // 判断评论的类型
+            let type;
+            switch (this.commentType) {
+                case "music":
+                    type = 0;
+                    break;
+                case "mv":
+                    type = 1;
+                    break;
+                case "musicList":
+                    type = 2;
+                    break;
+                case "album":
+                    type = 3;
+                    break;
+                case "video":
+                    type = 5;
+                    break;
+            }
+            // 切除前面回复字样，取用户输入回复的内容
+            let replyCommentInput = this.commentInput.substring(this.floorCommentInputLength, this.commentInput.length);
+            // console.log(replyCommentInput);
+            let res = await this.$request("/comment", {
+                t: 2,
+                id: this.commentId,
+                type,
+                content: replyCommentInput,
+                commentId: this.floorCommentId,
+            }).catch((err) => {
+                // console.log(err.response.data.msg);
+                this.$message.error(err.response.data.msg);
+            });
+            if (!res) {
+                return;
+            }
+            // console.log("发表回复评论: ", res);
+            if (res.data.code == 200) {
+                // 清空文本框
+                // 如果是单曲卡片评论，还需要关闭卡片
+                if (this.commentType == "music") {
+                    this.isCommentDialogShow = false;
+                }
+                this.commentInput = "";
+                this.commentMode = true;
+                this.floorCommentInputLength = 0;
+                this.floorCommentId = "";
+                this.$emit("getComment");
+            } else {
+                this.$message.error("评论失败,请稍后重试!");
+            }
+        },
+
         // 点击楼层评论的回调
         // commentId是评论id  nickName是评论作者
         replyComment(commentId, nickName) {
@@ -137,10 +256,75 @@ export default {
             this.commentInput = "回复" + nickName + "：";
             this.floorCommentInputLength = this.commentInput.length;
             this.floorCommentId = commentId;
+            this.floorCommentNickname = nickName;
             // 将评论模式改为楼层评论
             this.commentMode = false;
             console.log("楼层回复输入字符长度: ", this.floorCommentInputLength, "回复评论id: ", this.floorCommentId);
         },
+
+        // 点击喜欢该评论的回调
+        async likeCurrentComment(flag, cid) {
+            console.log(flag, cid);
+            // 判断是否登录
+            if (!this.$store.state.isLogin) {
+                this.$message.warning("只有登陆后才能点赞哦!");
+                return;
+            }
+            // 获取时间戳
+            var timestamp = Date.parse(new Date());
+            // 判断评论的类型
+            let type;
+            switch (this.commentType) {
+                case "music":
+                    type = 0;
+                    break;
+                case "mv":
+                    type = 1;
+                    break;
+                case "musicList":
+                    type = 2;
+                    break;
+                case "album":
+                    type = 3;
+                    break;
+                case "video":
+                    type = 5;
+                    break;
+            }
+            let res = await this.$request("/comment/like", {
+                id: this.commentId,
+                cid,
+                t: flag ? 0 : 1,
+                type,
+                timestamp,
+            });
+            console.log("点赞评论: ", res);
+            if (res.data.code == 200) {
+                this.$emit("getComment");
+            } else {
+                this.$message.error("点赞失败,请稍后重试!");
+            }
+        },
+
+        // 监听键盘事件
+        inputComment() {
+            // 如果是楼层回复
+            if (this.commentMode == false) {
+                if (this.commentInput.substring(0, this.floorCommentInputLength) 
+                        != "回复" + this.floorCommentNickname + "：") {
+                    this.commentMode = true;
+                    console.log("修改评论模式为普通评论");
+                }
+            }
+        },
+
+        showDate(value) {
+            // 1、先将时间戳转成Date对象
+            const date = new Date(value);
+            // 2、将date进行格式化
+            return formatDate(date, "yyyy-MM-dd");
+        },
+        
     }
 }
 </script>

@@ -24,6 +24,11 @@ export default createStore({
         isMusicLoad: false,
         // 用户喜欢的音乐列表
         likeMusicList: [],
+        // 要下载的音乐信息
+        downloadMusicInfo: {
+            name: '',
+            url: '',
+        },
     },
     mutations: {
         //更新登录状态
@@ -75,6 +80,10 @@ export default createStore({
         updateLikeMusicList(state, likeMusicList) {
             state.likeMusicList = likeMusicList;
             // console.log("喜欢的音乐列表: ", state.likeMusicList);
+        },
+        // 更新当前下载的音乐信息
+        updateDownloadMusicInfo(state, info) {
+            state.downloadMusicInfo = info;
         },
     }
 })

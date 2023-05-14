@@ -48,6 +48,11 @@
                 <!-- 给router-view添加key有可能对性能有一定的损耗，
                 但是可以解决push同一个地址不同参数时不会重新渲染router-view的问题 -->
                 <router-view class="routerView" :key="$route.fullPath"></router-view>
+                <!-- 用于下载的a标签 -->
+                <a :href="downloadMusicInfo.url"
+                   :download="downloadMusicInfo.name"
+                   target="_blank"
+                   id="downloadCurrentMusic"></a>
             </el-main>
         </el-container>
         <BottomControl></BottomControl>
@@ -55,6 +60,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import HeaderBar from "@/components/headerBar/HeaderBar.vue"
 import BottomControl from "@/components/BottomControl/BottomControl.vue";
 
@@ -70,6 +76,11 @@ export default {
             createdMusicList: [],
             // 收藏的歌单
             collectedMusicList: [],
+            // 下载的音乐的信息
+            downloadMusicInfo: {
+                name: "",
+                url: "",
+            },
         }
     },
     created() {
@@ -148,6 +159,31 @@ export default {
                 this.createdMusicList = [];
                 this.collectedMusicList = [];
             }
+        },
+        // 监听当前下载音乐信息
+        "$store.state.downloadMusicInfo"(current) {
+            axios.get(current.url, { responseType: "blob" })
+            .then((res) => {
+                let blob = res.data;
+                let url = URL.createObjectURL(blob);
+                // console.log(url);
+                let a = document.querySelector("#downloadCurrentMusic");
+                this.downloadMusicInfo.url = url;
+                this.downloadMusicInfo.name = current.name;
+                this.$nextTick(() => {
+                    a.click();
+                    // 用完释放URL对象
+                    URL.revokeObjectURL(url);
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+                if (err.request.statusText == "Forbidden") {
+                    this.$message.error("您不是黑胶会员，下载失败!");
+                } else {
+                    this.$message.error("下载失败，请稍后尝试");
+                }
+            });
         },
     },
 }
