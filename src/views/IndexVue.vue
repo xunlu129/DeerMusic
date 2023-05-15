@@ -166,7 +166,7 @@ export default {
             .then((res) => {
                 let blob = res.data;
                 let url = URL.createObjectURL(blob);
-                // console.log(url);
+                console.log(url);
                 let a = document.querySelector("#downloadCurrentMusic");
                 this.downloadMusicInfo.url = url;
                 this.downloadMusicInfo.name = current.name;

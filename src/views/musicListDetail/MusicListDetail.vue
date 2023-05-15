@@ -27,11 +27,11 @@
                 </div>
                 <!-- 操作按钮 -->
                 <div class="buttons">
-                    <div class="buttonItem playAll">
+                    <div class="buttonItem playAll" @click="playAll">
                         <i class="iconfont icon-bofang playAll"></i>
                         <span>播放全部</span>
                     </div>
-                    <div class="buttonItem" v-if="!isCreated">
+                    <div class="buttonItem" v-if="!isCreated" @click="collectList">
                         <i class="iconfont icon-xihuan" :class="isSub ? 'red' : ''"></i>
                         <span>{{ isSub ? "已收藏" : "收藏" }}({{ subscribedCount }})</span>
                     </div>
@@ -97,7 +97,7 @@
                         <el-table-column label="" width="45">
                             <!--下载按钮-->
                             <template #default="scope">
-                                <i class="iconfont icon-download" @click="downloadCurrentMusic(scope.row, )"></i>
+                                <i class="iconfont icon-download" @click="downloadCurrentMusic(scope.row)"></i>
                             </template>
                         </el-table-column>
                         <el-table-column prop="name" label="音乐标题" min-width="350"></el-table-column>
@@ -163,6 +163,8 @@
                 </el-tab-pane>
             </el-tabs>
         </div>
+        <!-- 返回顶部组件 -->
+        <GoTop scrollObj=".musicListDetail"></GoTop>
     </div>
 </template>
 
@@ -170,12 +172,14 @@
 import { formatDate, handleNum, handleMusicTime } from "plugins/utils";
 import CommentCompn from "@/components/comment/CommentCompn.vue";
 import UserListCard from "@/components/userListCard/UserListCard.vue";
+import GoTop from "@/components/goTop/GoTop.vue";
 
 export default {
     name: "MusicListDetail",
     components: {
         CommentCompn,
         UserListCard,
+        GoTop,
     },
     data() {
         return {
@@ -353,9 +357,11 @@ export default {
         // 点击下载按钮的回调
         async downloadCurrentMusic(musicDetail) {
             let id = musicDetail.id;
+            console.log(id);
             // 获取音乐URL
-            let result = await this.$request("/song/url", { id });
+            let result = await this.$request("/song/url", { id: id });
             // console.log(result);
+            console.log(result.data.data[0].url);
             if (result.data.data[0].url == null) {
                 this.$message.error("该歌曲暂无版权，无法下载!");
                 return;
@@ -388,20 +394,51 @@ export default {
                     "." +
                     musicType,
             };
-            // console.log("下载音乐信息: ", downloadMusicInfo);
+            console.log("下载音乐信息: ", downloadMusicInfo);
             this.$store.commit("updateDownloadMusicInfo", downloadMusicInfo);
+        },
+
+        // 点击收藏按钮的回调
+        async collectList() {
+            if (!this.$store.state.isLogin) {
+                return;
+            }
+            this.isSub = !this.isSub;
+            // 请求
+            let timestamp = Date.parse(new Date());
+            await this.$request("/playlist/subscribe", {
+                id: this.$route.params.id,
+                t: this.isSub ? 1 : 2,
+                timestamp,
+            });
+            // 请求收藏歌单列表并保存至vuex
+            this.getUserMusicList();
+        },
+
+        // 请求用户歌单
+        async getUserMusicList() {
+            let timestamp = Date.parse(new Date());
+            // 先从localStorage里面读取用户信息
+            let res = await this.$request("/user/playlist", {
+                uid: window.localStorage.getItem("userId"),
+                timestamp,
+            });
+            res = res.data.playlist;
+            let index = res.findIndex((item) => item.subscribed == true);
+            this.collectedMusicList = res.slice(index);
+            // 将收藏的歌单上传至vuex
+            this.$store.commit("updateCollectMusicList", this.collectedMusicList);
         },
 
 
         // 事件函数
-        // 将个位数序号前面加个0
-        handleIndex(index) {
-            index += 1;
-            if (index < 10) {
-                return "0" + index;
-            } else {
-                return index;
-            }
+        // 点击播放全部按钮的回调
+        playAll() {
+            this.$store.commit("updateMusicId", this.musicListDetail.tracks[0].id);
+            this.$store.commit("updateMusicList", {
+                musicList: this.musicListDetail.tracks,
+                musicListId: this.musicListDetail.id,
+            });
         },
 
         // 判断用户是否收藏了该歌单
@@ -428,7 +465,7 @@ export default {
             // }
         },
 
-        // 点击加载所有音乐的回调
+        // 触底加载所有音乐的回调
         loadMore() {
             if (!this.$store.state.isLogin) {
                 this.$message.error("请先进行登录操作!");
@@ -497,6 +534,16 @@ export default {
         bottomLoad() {
             this.followedsListData.currentPage += 1;
             this.getMusicListFolloweds();
+        },
+
+        // 将个位数序号前面加个0
+        handleIndex(index) {
+            index += 1;
+            if (index < 10) {
+                return "0" + index;
+            } else {
+                return index;
+            }
         },
 
         // 格式化时间
