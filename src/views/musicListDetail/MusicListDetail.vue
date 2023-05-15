@@ -154,7 +154,12 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane label="收藏者" name="third">
-                    
+                    <!--使用.slice()将followedsListData.followedsList的值复制到一个新数组中。
+                        然后在UserListCard组件的watch中才可以监听到userList的变化-->
+                    <UserListCard userType="musicListDetailPage"
+                                  :userList="followedsListData.followedsList.slice()"
+                                  :isLoad="followedsListData.isMore"
+                                  @bottomLoad="bottomLoad"></UserListCard>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -164,11 +169,13 @@
 <script>
 import { formatDate, handleNum, handleMusicTime } from "plugins/utils";
 import CommentCompn from "@/components/comment/CommentCompn.vue";
+import UserListCard from "@/components/userListCard/UserListCard.vue";
 
 export default {
     name: "MusicListDetail",
     components: {
         CommentCompn,
+        UserListCard,
     },
     data() {
         return {
@@ -196,6 +203,17 @@ export default {
             isCommentLoading: false,
             // 当前评论页数
             currentCommentPage: 1,
+            // 收藏者列表的变量
+            followedsListData: {
+                // 当前页数
+                currentPage: 1,
+                // 列表
+                followedsList: [],
+                // 是否还有更多
+                isMore: false,
+                // 是否已经加载过列表数据 （用于点击收藏者tab后第一次加载数据）
+                isLoaded: false,
+            },
         }
     },
     methods: {
@@ -226,6 +244,7 @@ export default {
                 this.musicListDetail.tracks[index].dt = handleMusicTime(item.dt);
             });
         },
+
         // 获取歌曲详情
         async getMusicDetail(ids) {
             if (this.isMore == false) return;
@@ -248,6 +267,7 @@ export default {
                 this.isMore = false;
             }
         },
+
         // 获取歌单评论
         async getMusicListComment(type) {
             // 获取时间戳
@@ -269,6 +289,7 @@ export default {
             this.comments = res.data;
             this.isCommentLoading = false;
         },
+
         scrollToComment() {
             let musicListDetail = document.querySelector(".musicListDetail");
             let listInfo = document.querySelector(".listInfo");
@@ -278,6 +299,18 @@ export default {
                 top: listInfo.clientHeight - 20,
             });
         },
+
+        // 获取歌单收藏者
+        async getMusicListFolloweds() {
+            let res = await this.$request("/playlist/subscribers", {
+                id: this.$route.params.id,
+                offset: (this.followedsListData.currentPage - 1) * 20,
+            });
+            this.followedsListData.isMore = res.data.more;
+            this.followedsListData.followedsList.push(...res.data.subscribers);
+            // console.log("歌单收藏者: ", this.followedsListData.followedsList);
+        },
+
         // 点击喜欢音乐
         async likeMusic(musicId) {
             // 判断是否登录
@@ -302,6 +335,7 @@ export default {
                 this.$message.error("喜欢失败,请稍后重试!");
             }
         },
+
         // 更新喜欢音乐列表
         async updateLikeMusicList() {
             // 获取时间戳
@@ -315,6 +349,7 @@ export default {
             // 将喜欢列表提交到vuex 供歌单中显示喜欢使用
             this.$store.commit("updateLikeMusicList", likeMusicList);
         },
+
         // 点击下载按钮的回调
         async downloadCurrentMusic(musicDetail) {
             let id = musicDetail.id;
@@ -357,6 +392,7 @@ export default {
             this.$store.commit("updateDownloadMusicInfo", downloadMusicInfo);
         },
 
+
         // 事件函数
         // 将个位数序号前面加个0
         handleIndex(index) {
@@ -367,6 +403,7 @@ export default {
                 return index;
             }
         },
+
         // 判断用户是否收藏了该歌单
         getIsSub() {
             this.isSub = this.$store.state.collectMusicList.find(
@@ -378,6 +415,7 @@ export default {
             //     console.log("是否收藏了该歌单: 否");
             // }
         },
+
         // 判断是否是用户创建的歌单
         getIsCreated() {
             this.isCreated = this.$store.state.createdMusicList.find(
@@ -389,6 +427,7 @@ export default {
             //     console.log("是否用户创建的歌单: 否");
             // }
         },
+
         // 点击加载所有音乐的回调
         loadMore() {
             if (!this.$store.state.isLogin) {
@@ -411,13 +450,18 @@ export default {
             // console.log(ids);
             this.getMusicDetail(ids);
         },
+
         // 点击el-tab-pane的回调
         clickTab(e) {
             // console.log(e.index);
             if (e.index == 1 && !this.comments.comments) {
                 this.getMusicListComment();
+            } else if (e.index == 2 && !this.followedsListData.isLoaded) {
+                this.getMusicListFolloweds();
+                this.followedsListData.isLoaded = true;
             }
         },
+
         // 评论点击翻页的回调
         commentPageChange(page) {
             this.currentCommentPage = page;
@@ -434,6 +478,7 @@ export default {
                 return false;
             }
         },
+
         // 最新评论组件是否显示
         isNewCommentCompnShow(comments) {
             if (this.currentCommentPage != 1) {
@@ -447,6 +492,13 @@ export default {
                 return false;
             }
         },
+
+        // 收藏者列表触底的回调
+        bottomLoad() {
+            this.followedsListData.currentPage += 1;
+            this.getMusicListFolloweds();
+        },
+
         // 格式化时间
         showDate(time) {
             // 1、先将时间戳转成Date对象
