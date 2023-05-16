@@ -175,8 +175,9 @@
   width: 100%;
 }
 
-/* .el-table__row td:nth-child(8) {
-  display: none;
+/*表格最左边缩进*/
+.el-table--border td:first-child .cell, .el-table--border th:first-child .cell, .el-table .cell {
+  padding-left: 20px;
 }
 
 tr .is-leaf:nth-child(8) {
@@ -235,42 +236,52 @@ body .el-table .el-table__row .currentRow {
   background-color: #fff !important;
 }
 
-
+/*抽屉0边框*/
 .el-drawer__body {
   overflow: auto;
   /* overflow-x: auto; */
+  padding: 0 !important;
 }
 
-/*2.隐藏滚动条*/
-.el-drawer__container ::-webkit-scrollbar {
-  display: none;
+/*抽屉暂无数据文字大小*/
+.el-table__empty-text {
+  font-size: 20px;
 }
 
+/*抽屉暂无数据盒子高度*/
+.el-table__empty-block {
+  min-height: 100px !important;
+}
+
+/*抽屉中的表格字体颜色*/
 .el-drawer .el-table .cell {
   color: rgb(39, 39, 39) !important;
 }
 
+/*抽屉时间颜色调淡一点*/
 .el-drawer .el-table td:nth-child(3) .cell {
   color: #aaa !important;
 }
 
+
 .el-drawer .el-table td,
-
-
 .el-drawer__wrapper {
   bottom: auto !important;
 }
 
+/*抽屉大小*/
 .el-drawer.ltr,
 .el-drawer.rtl,
 .el-drawer__container {
-  height: calc(80vh - 55px) !important;
+  height: calc(100vh - 80px) !important;
+  width: 500px !important;
 }
 
+
 /*从右到左排列的标签样式*/
-.rtl {
+/* .rtl {
   width: 300px !important;
-}
+} */
 
 
 

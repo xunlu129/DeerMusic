@@ -28,12 +28,8 @@ module.exports = defineConfig({
         }
       },
       // 代理到网易云音乐用于下载
-      // 网易云音乐地址没有黑胶会员下载不了
-      // 这里代理到一个大佬的服务器进行下载，侵删orz
-      // 大佬的公开项目地址：https://gitee.com/PengGeee/vue_cloud_music
       '/m7': {
-        // target: 'http://m7.music.126.net',
-        target: 'http://www.codeman.ink',
+        target: 'http://m7.music.126.net',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
@@ -41,8 +37,7 @@ module.exports = defineConfig({
         }
       },
       '/m701': {
-        // target: 'http://m701.music.126.net',
-        target: 'http://www.codeman.ink',
+        target: 'http://m701.music.126.net',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
@@ -50,8 +45,7 @@ module.exports = defineConfig({
         }
       },
       '/m8': {
-        // target: 'http://m8.music.126.net',
-        target: 'http://www.codeman.ink',
+        target: 'http://m8.music.126.net',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
@@ -59,8 +53,7 @@ module.exports = defineConfig({
         }
       },
       '/m801': {
-        // target: 'http://m801.music.126.net',
-        target: 'http://www.codeman.ink',
+        target: 'http://m801.music.126.net',
         changeOrigin: true,
         ws: true,
         pathRewrite: {

@@ -21,6 +21,9 @@
                     {{ musicDetail.ar[0].name }}
                 </div>
             </div>
+            <div class="downloadContainer" v-if="musicDetail.name">
+                <i class="iconfont icon-download" @click="downloadCurrentMusic"></i>
+            </div>
         </div>
         <!--中间-->
         <div class="center">
@@ -69,7 +72,7 @@
                            :show-tooltip="false"
                            @input="changeVolume"></el-slider>
             </div>
-            <div class="playList">
+            <div class="playList" @click="openDrawer">
                 <i class="iconfont icon-bofangliebiao"></i>
             </div>
             <!-- 备案信息 -->
@@ -85,6 +88,21 @@
                          class="recondInfo">粤ICP备2020501116号</el-link>
             </el-tooltip>
         </div>
+        <!-- 抽屉 -->
+        <el-drawer v-model="drawer" :with-header="false" width="500" append-to-body="true">
+            <div class="drawerHeader">共{{ musicList.length }}首</div>
+            <el-table :data="musicList"
+                      stripe
+                      style="width: 100%"
+                      :show-header="false"
+                      @row-dblclick="clickRow"
+                      highlight-current-row
+                      lazy>
+                <el-table-column prop="name" width="250px"> </el-table-column>
+                <el-table-column prop="ar[0].name" width="150px"> </el-table-column>
+                <el-table-column prop="dt" width="92px"> </el-table-column>
+            </el-table>
+        </el-drawer>
     </div>
 </template>
 
@@ -96,6 +114,8 @@ let lastSecond = 0;
 let durationNum = 0;
 // 保存当前音量
 let volumeSave = 0;
+// 当前音乐类型，用于下载
+let musicType = "";
 
 export default {
     name: 'BottomControl',
@@ -119,6 +139,10 @@ export default {
             volume: 35,
             // 是否静音
             isMuted: false,
+            // 抽屉是否显示
+            drawer: false,
+            // 抽屉是否被打开过（如果没打开过，里面的数据是不会渲染的）
+            hasDrawerOpened: false,
             recondInfo: `<div style='text-align: center; font-size: 12px;'>
 粤ICP备2020501116号<br>个人邮箱: 3181716884@qq.com<br>本站为仿网易云音乐展示项目, 仅供学习使用, 侵权必删!</div>`,
         }
@@ -138,6 +162,7 @@ export default {
             }
             console.log("正在播放的音乐: ", result.data.data[0].url);
             this.musicUrl = result.data.data[0].url;
+            musicType = result.data.data[0].type.toLowerCase();
             // 不知什么原因第一次播放音量不等于this.volume,所以每次获取歌曲时更新同步一下音量
             this.$refs.audioPlayer.volume = this.volume / 100;
             this.$store.commit("updateMusicLoadState", false);
@@ -318,6 +343,90 @@ export default {
             this.$refs.audioPlayer.currentTime = this.currentTime;
         },
 
+        // 点击打开抽屉的回调
+        openDrawer() {
+            // 关闭也是这个回调，所以直接取反
+            this.drawer = !this.drawer;
+            this.hasDrawerOpened = true;
+            setTimeout(() => {
+                this.handleDrawerListDOM(this.currentMusicIndex);
+            }, 100); // 延迟执行，等待里面的数据渲染了再处理DOM，可以根据实际情况调整延迟时间
+        },
+
+        // 双击抽屉列表中的row的回调
+        clickRow(row) {
+            // console.log(row.id);
+            this.changeMusic("click", row.id);
+        },
+
+        // 操作drawerList中DOM的函数
+        handleDrawerListDOM(currentIndex, lastIndex) {
+            // 目前没什么好思路 直接操作原生DOM
+            this.$nextTick(() => {
+                // 用了append-to-body="true"，把抽屉嵌入到了主body里了，并且类名叫el-overlay
+                let tableRows = document
+                .querySelector(".el-overlay")
+                .querySelectorAll(".el-table__row");
+                // console.log(tableRows);
+                // 直接修改dom样式的颜色无效  可能是因为第三方组件 style scoped的原因
+                // 通过引入全局样式解决
+                if (tableRows[currentIndex]) {
+                    tableRows[currentIndex].children[0]
+                        .querySelector(".cell")
+                        .classList.add("currentRow");
+                    tableRows[currentIndex].children[1]
+                        .querySelector(".cell")
+                        .classList.add("currentRow");
+                    // console.log("引入currentRow");
+                }
+                if (
+                    (lastIndex && lastIndex != -1 && tableRows[lastIndex]) ||
+                    lastIndex == 0
+                ) {
+                    // 将上一首的类名删掉
+                    tableRows[lastIndex].children[0]
+                        .querySelector(".cell")
+                        .classList.remove("currentRow");
+                    tableRows[lastIndex].children[1]
+                        .querySelector(".cell")
+                        .classList.remove("currentRow");
+                    // console.log("移除currentRow");
+                }
+            });
+        },
+
+        // 点击下载按钮的回调
+        downloadCurrentMusic() {
+            // console.log(this.musicDetail, this.musicUrl);
+            // 匹配资源的域名
+            let url = this.musicUrl.match(/http.*?\.net/);
+            // 匹配域名名称，并匹配对应的代理
+            let serve = url[0].match(/http:\/(\S*).music/)[1];
+            if (
+                serve != "/m7" &&
+                serve != "/m701" &&
+                serve != "/m8" &&
+                serve != "/m801"
+            ) {
+                // 没有对应的代理
+                this.$message.error("匹配不到对应的代理,下载失败!");
+                return;
+            }
+            // 截取后面的参数
+            let params = this.musicUrl.slice(url[0].length);
+            let downloadMusicInfo = {
+                url: serve + params,
+                name:
+                    this.musicDetail.name +
+                    " - " +
+                    this.musicDetail.ar[0].name +
+                    "." +
+                    musicType,
+            };
+            console.log("下载音乐信息: ", downloadMusicInfo);
+            this.$store.commit("updateDownloadMusicInfo", downloadMusicInfo);
+        },
+
         // 格式化当前时间
         handleTime(time) {
             return handleMusicTime(time);
@@ -342,6 +451,12 @@ export default {
                 this.playMusic();
             } else {
                 this.pauseMusic();
+            }
+        },
+        // 监听currentIndex的变化
+        "$store.state.currentIndex"(currentIndex, lastIndex) {
+            if (this.hasDrawerOpened) {
+                this.handleDrawerListDOM(currentIndex, lastIndex);
             }
         },
     }
@@ -412,6 +527,12 @@ export default {
 
 .musicName:hover, .singer:hover {
     color: black;
+}
+
+.downloadContainer i {
+    font-size: 25px;
+    position: absolute;
+    bottom: 13px;
 }
 
 .center {
@@ -532,4 +653,9 @@ export default {
     bottom: -10px;
 }
 
+.drawerHeader {
+    font-size: 16px;
+    color: #aaa;
+    padding: 15px;
+}
 </style>

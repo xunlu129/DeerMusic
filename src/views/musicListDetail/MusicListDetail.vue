@@ -95,7 +95,7 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="" width="45">
+                        <el-table-column label="" width="50">
                             <!--下载按钮-->
                             <template #default="scope">
                                 <i class="iconfont icon-download" @click="downloadCurrentMusic(scope.row)"></i>
