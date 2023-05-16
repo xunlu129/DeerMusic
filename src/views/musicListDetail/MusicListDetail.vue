@@ -81,7 +81,8 @@
                               v-infinite-scroll="this.$store.state.isLogin ? loadMore : ''"
                               :infinite-scroll-disabled="scrollLoadDisabled"
                               :infinite-scroll-distance="1500"
-                              :infinite-scroll-immediate="false">
+                              :infinite-scroll-immediate="false"
+                              @row-dblclick="clickRow">
                         <el-table-column label="" width="42" type="index" :index="handleIndex"></el-table-column>
                         <el-table-column label="" width="42">
                             <!--喜欢按钮-->
@@ -272,6 +273,21 @@ export default {
             }
         },
 
+        // 获取歌单全部歌曲详情
+        async getAllMusicDetail() {
+            var timestamp = Date.parse(new Date());
+            let res = await this.$request("/playlist/track/all", {
+                id: this.$route.params.id,
+                timestamp,
+            });
+            // 处理时间
+            res.data.songs.forEach((item, index) => {
+                res.data.songs[index].dt = handleMusicTime(item.dt);
+            });
+            // console.log("全部歌曲: ", res);
+            return res.data.songs;
+        },
+
         // 获取歌单评论
         async getMusicListComment(type) {
             // 获取时间戳
@@ -286,7 +302,7 @@ export default {
                 limit: 50,
                 timestamp,
             });
-            console.log("评论详情: ", res);
+            // console.log("评论详情: ", res);
             if (res.data.code !== 200) {
                 this.$message.error("获取评论失败,请稍后重试!");
             }
@@ -433,12 +449,52 @@ export default {
 
         // 事件函数
         // 点击播放全部按钮的回调
-        playAll() {
+        async playAll() {
+            // 将当前播放歌曲设为该歌单第一首
             this.$store.commit("updateMusicId", this.musicListDetail.tracks[0].id);
-            this.$store.commit("updateMusicList", {
-                musicList: this.musicListDetail.tracks,
-                musicListId: this.musicListDetail.id,
-            });
+            // 如果歌单发生变化，则提交歌单到vuex
+            if (this.musicListDetail.id != this.$store.state.musicListId) {
+                // 判断是否登录选择播放的歌曲
+                if (this.$store.state.isLogin) {
+                    let result = await this.getAllMusicDetail();
+                    // console.log(result);
+                    this.$store.commit("updateMusicList", {
+                        musicList: result,
+                        musicListId: this.musicListDetail.id,
+                    });
+                } else {
+                    this.$store.commit("updateMusicList", {
+                        musicList: this.musicListDetail.tracks,
+                        musicListId: this.musicListDetail.id,
+                    });
+                }
+            }            
+        },
+
+        // 双击table的row的回调
+        async clickRow(row) {
+            // console.log(row);
+            // 将musicId提交到vuex中 供bottomControl查询歌曲url和其它操作
+            this.$store.commit("updateMusicId", row.id);
+            // 如果歌单发生变化,则提交歌单到vuex
+            if (this.musicListDetail.id != this.$store.state.musicListId) {
+                // 判断是否登录选择播放的歌曲
+                if (this.$store.state.isLogin) {
+                    let result = await this.getAllMusicDetail();
+                    this.$store.commit("updateMusicList", {
+                        musicList: result,
+                        musicListId: this.musicListDetail.id,
+                    });
+                } else {
+                    this.$store.commit("updateMusicList", {
+                        musicList: this.musicListDetail.tracks,
+                        musicListId: this.musicListDetail.id,
+                    });
+                }
+            }
+            // let result = await this.$request("/song/url", { id: row.id, br: 320000 });
+            // console.log(result.data.data[0].url);
+            // this.$store.commit("updateMusicUrl", result.data.data[0].url);
         },
 
         // 判断用户是否收藏了该歌单
@@ -553,6 +609,48 @@ export default {
             // 2、将date进行格式化
             return formatDate(date, "yyyy-MM-dd");
         },
+
+        // 更改当前播放音乐的样式
+        handleDOM(current, last) {
+            // console.log(current, last);
+            if (document.querySelector(".musicListDetail")) {
+                let tableRows = document
+                .querySelector(".musicListDetail")
+                .querySelectorAll(".el-table__row");
+                // 遍历当前musicList 找到当前播放的index的行进行渲染
+                // console.log(tableRows);
+                let index = this.musicListDetail.tracks.findIndex(
+                    (item) => item.id == current
+                );
+                // console.log(index);
+                if (index != -1) {
+                    // 直接修改dom样式的颜色无效  可能是因为第三方组件的原故
+                    // 通过引入全局样式解决
+                    // 将正在播放的音乐前面的索引换成小喇叭
+                    tableRows[index].children[0].querySelector(
+                        ".cell"
+                    ).innerHTML = `<div><i class="iconfont icon-yinliang1"></i></div>`;
+                    tableRows[index].children[0].querySelector(".iconfont").classList.add("currentRow");
+                    tableRows[index].children[3].querySelector(".cell").classList.add("currentRow");
+                }
+                // 清除上一首的样式
+                if (last != -1) {
+                    let lastIndex = this.musicListDetail.tracks.findIndex(
+                        (item) => item.id == last
+                    );
+                    if (lastIndex != -1) {
+                        // 将上一个播放的dom的小喇叭换回索引
+                        tableRows[lastIndex].children[0].querySelector(
+                            ".cell"
+                        ).innerHTML = `<div>${
+                            lastIndex + 1 < 10 ? "0" + (lastIndex + 1) : lastIndex + 1
+                        }</div>`;
+                        // 将上一首的类名删掉  小喇叭的html已经被替换了，不需要再还原
+                        tableRows[lastIndex].children[3].querySelector(".cell").classList.remove("currentRow");
+                    }
+                }
+            }
+        },
     },
     async mounted() {
         await this.getmusicListDetail();
@@ -564,6 +662,12 @@ export default {
                 this.getIsSub();
             }
         }
+        this.$nextTick(() => {
+            // 判断是否和正在播放的歌单相同
+            if (this.$route.params.id == this.$store.state.musicListId) {
+                this.handleDOM(this.$store.state.musicId);
+            }
+        });
     },
     watch: {
         // 监听createdMusicList的变化
@@ -576,6 +680,10 @@ export default {
                     this.getIsSub();
                 }
             }
+        },
+        // 监听当前播放歌曲进行渲染
+        "$store.state.musicId"(current, last) {
+            this.handleDOM(current, last);
         },
     }
 }

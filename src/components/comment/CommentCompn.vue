@@ -259,7 +259,7 @@ export default {
             this.floorCommentNickname = nickName;
             // 将评论模式改为楼层评论
             this.commentMode = false;
-            console.log("楼层回复输入字符长度: ", this.floorCommentInputLength, "回复评论id: ", this.floorCommentId);
+            // console.log("楼层回复输入字符长度: ", this.floorCommentInputLength, "回复评论id: ", this.floorCommentId);
         },
 
         // 点击喜欢该评论的回调
@@ -298,7 +298,7 @@ export default {
                 type,
                 timestamp,
             });
-            console.log("点赞评论: ", res);
+            // console.log("点赞评论: ", res);
             if (res.data.code == 200) {
                 this.$emit("getComment");
             } else {
