@@ -70,7 +70,11 @@ export default createStore({
         // 当前播放音乐的索引
         updateCurrentIndex(state, index) {
             state.currentIndex = index;
-            console.log("当前音乐的索引: ", state.currentIndex);
+            // console.log("当前音乐的索引: ", state.currentIndex);
+        },
+        // 更新实时播放时长
+        updateCurrentTime(state, currentTime) {
+            state.currentTime = currentTime;
         },
         // 更新音乐的加载状态
         updateMusicLoadState(state, isLoad) {

@@ -450,8 +450,7 @@ export default {
         // 事件函数
         // 点击播放全部按钮的回调
         async playAll() {
-            // 将当前播放歌曲设为该歌单第一首
-            this.$store.commit("updateMusicId", this.musicListDetail.tracks[0].id);
+            // 一定要先更新歌单再更新歌曲，不然播放时获取不到歌单
             // 如果歌单发生变化，则提交歌单到vuex
             if (this.musicListDetail.id != this.$store.state.musicListId) {
                 // 判断是否登录选择播放的歌曲
@@ -468,14 +467,15 @@ export default {
                         musicListId: this.musicListDetail.id,
                     });
                 }
-            }            
+            }     
+            // 将当前播放歌曲设为该歌单第一首
+            this.$store.commit("updateMusicId", this.musicListDetail.tracks[0].id);       
         },
 
         // 双击table的row的回调
         async clickRow(row) {
             // console.log(row);
-            // 将musicId提交到vuex中 供bottomControl查询歌曲url和其它操作
-            this.$store.commit("updateMusicId", row.id);
+            // 一定要先更新歌单再更新歌曲，不然播放时获取不到歌单
             // 如果歌单发生变化,则提交歌单到vuex
             if (this.musicListDetail.id != this.$store.state.musicListId) {
                 // 判断是否登录选择播放的歌曲
@@ -495,6 +495,8 @@ export default {
             // let result = await this.$request("/song/url", { id: row.id, br: 320000 });
             // console.log(result.data.data[0].url);
             // this.$store.commit("updateMusicUrl", result.data.data[0].url);
+            // 将musicId提交到vuex中 供bottomControl查询歌曲url和其它操作
+            this.$store.commit("updateMusicId", row.id);
         },
 
         // 判断用户是否收藏了该歌单
