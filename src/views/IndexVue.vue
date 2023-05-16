@@ -162,6 +162,7 @@ export default {
         },
         // 监听当前下载音乐信息
         "$store.state.downloadMusicInfo"(current) {
+            console.log(current.url);
             axios.get(current.url, { responseType: "blob" })
             .then((res) => {
                 let blob = res.data;
