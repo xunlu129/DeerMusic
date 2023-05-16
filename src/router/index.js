@@ -6,6 +6,7 @@ const MusicList = () => import('views/discover/discoverChildren/MusicListView.vu
 const Ranking = () => import('views/discover/discoverChildren/RankingView.vue')
 const Singer = () => import('views/discover/discoverChildren/SingerView.vue')
 const MusicListIndex = () => import('views/discover/discoverChildren/musicListChildren/MusicListIndex.vue')
+const MusicListDetail = () => import('views/musicListDetail/MusicListDetail.vue')
 
 const routes = [
     {path: '/', redirect: '/index'},
@@ -31,7 +32,8 @@ const routes = [
                     { path: '/discover/ranking', component: Ranking },
                     { path: '/discover/singer', component: Singer },
                 ]
-            }
+            },
+            { path: '/musiclistdetail/:id', name: 'musicListDetail', component: MusicListDetail },
         ]
     }
 ]

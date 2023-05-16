@@ -48,6 +48,11 @@
                 <!-- 给router-view添加key有可能对性能有一定的损耗，
                 但是可以解决push同一个地址不同参数时不会重新渲染router-view的问题 -->
                 <router-view class="routerView" :key="$route.fullPath"></router-view>
+                <!-- 用于下载的a标签 -->
+                <a :href="downloadMusicInfo.url"
+                   :download="downloadMusicInfo.name"
+                   target="_blank"
+                   id="downloadCurrentMusic"></a>
             </el-main>
         </el-container>
         <BottomControl></BottomControl>
@@ -55,6 +60,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import HeaderBar from "@/components/headerBar/HeaderBar.vue"
 import BottomControl from "@/components/BottomControl/BottomControl.vue";
 
@@ -70,6 +76,11 @@ export default {
             createdMusicList: [],
             // 收藏的歌单
             collectedMusicList: [],
+            // 下载的音乐的信息
+            downloadMusicInfo: {
+                name: "",
+                url: "",
+            },
         }
     },
     created() {
@@ -93,7 +104,7 @@ export default {
                 uid: window.localStorage.getItem("userId"),
                 timestamp,
             });
-            console.log("用户歌单: ", res);
+            // console.log("用户歌单: ", res);
             // 对数据进行处理分类
             res = res.data.playlist;
             let index = res.findIndex((item) => item.subscribed == true);
@@ -105,6 +116,24 @@ export default {
             this.$store.commit("updateCreatedMusicList", this.createdMusicList);
             // 将收藏的歌单上传至vuex
             this.$store.commit("updateCollectMusicList", this.collectedMusicList);
+        },
+        // 获取喜欢音乐列表
+        async getLikeMusicList() {
+            if (!this.$store.state.isLogin) {
+                // 说明已经退出登录
+                this.$message.error("请先进行登录操作");
+                return;
+            }
+            // 获取时间戳
+            var timestamp = Date.parse(new Date());
+            // 因为喜欢音乐列表实时性较高，为了避免接口缓存，在请求后面加上一个时间戳
+            let res = await this.$request("/likelist", {
+                uid: window.localStorage.getItem("userId"),
+                timestamp,
+            });
+            let likeMusicList = res.data.ids;
+            // 将喜欢列表提交到vuex 供歌单中显示喜欢使用
+            this.$store.commit("updateLikeMusicList", likeMusicList);
         },
     },
     watch: {
@@ -124,11 +153,37 @@ export default {
         "$store.state.isLogin"(current) {
             if (current) {
                 this.getUserMusicList();
+                this.getLikeMusicList();
             } else {
                 // 清空收藏和创建歌单
                 this.createdMusicList = [];
                 this.collectedMusicList = [];
             }
+        },
+        // 监听当前下载音乐信息
+        "$store.state.downloadMusicInfo"(current) {
+            axios.get(current.url, { responseType: "blob" })
+            .then((res) => {
+                let blob = res.data;
+                let url = URL.createObjectURL(blob);
+                console.log(url);
+                let a = document.querySelector("#downloadCurrentMusic");
+                this.downloadMusicInfo.url = url;
+                this.downloadMusicInfo.name = current.name;
+                this.$nextTick(() => {
+                    a.click();
+                    // 用完释放URL对象
+                    URL.revokeObjectURL(url);
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+                if (err.request.statusText == "Forbidden") {
+                    this.$message.error("您不是黑胶会员，下载失败!");
+                } else {
+                    this.$message.error("下载失败，请稍后尝试");
+                }
+            });
         },
     },
 }
@@ -152,5 +207,12 @@ export default {
 
 .el-main {
   padding: 0;
+}
+
+.routerView {
+    padding: 0 20px;
+    margin: 0;
+    width: 100%;
+    height: calc(100vh - 145px);
 }
 </style>
