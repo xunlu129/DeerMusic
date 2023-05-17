@@ -172,7 +172,7 @@ export default {
         async likeMusic() {
             // 判断是否登录
             if (!this.$store.state.isLogin) {
-                this.$message.warning("只有登陆后才能喜欢哦!");
+                this.$message.warning("只有登录后才能喜欢哦!");
                 return;
             }
             // 判断是否已经喜欢该音乐，flag为true就表示还没喜欢，false表示已经喜欢了

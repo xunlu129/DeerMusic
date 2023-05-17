@@ -119,7 +119,7 @@ export default {
         async submitComment() {
             // 判断是否登录
             if (!this.$store.state.isLogin) {
-                this.$message.warning("只有登陆后才能评论哦!");
+                this.$message.warning("只有登录后才能评论哦!");
                 return;
             }
             // 先判断评论内容是否为空
@@ -177,7 +177,7 @@ export default {
             // console.log("提交回复评论");
             // 判断是否登录
             if (!this.$store.state.isLogin) {
-                this.$message.warning("只有登陆后才能评论哦!");
+                this.$message.warning("只有登录后才能评论哦!");
                 return;
             }
             if (this.commentInput.length == this.floorCommentInputLength) {
@@ -267,7 +267,7 @@ export default {
             console.log(flag, cid);
             // 判断是否登录
             if (!this.$store.state.isLogin) {
-                this.$message.warning("只有登陆后才能点赞哦!");
+                this.$message.warning("只有登录后才能点赞哦!");
                 return;
             }
             // 获取时间戳

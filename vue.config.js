@@ -44,6 +44,14 @@ module.exports = defineConfig({
           '^/m701': ''
         }
       },
+      '/m702': {
+        target: 'http://m702.music.126.net',
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          '^/m702': ''
+        }
+      },
       '/m8': {
         target: 'http://m8.music.126.net',
         changeOrigin: true,
@@ -58,6 +66,14 @@ module.exports = defineConfig({
         ws: true,
         pathRewrite: {
           '^/m801': ''
+        }
+      },
+      '/m802': {
+        target: 'http://m802.music.126.net',
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          '^/m802': ''
         }
       }
     },

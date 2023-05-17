@@ -1,6 +1,6 @@
 <template>
     <div class="img-container">
-        <img :src="qrCodeImg">
+        <img :src="qrCodeImg"  @click="refreshQrCode()" />
     </div>
 </template>
 
@@ -46,13 +46,15 @@ export default {
 
                 const res = await checkQrCode({ key: this.key, timestamp: getTimeStamp() });
                 if (res.data.code === 800) {
-                // 二维码过期
-                this.clearChecker();
-                this.init();
+                    // 二维码过期
+                    console.log("二维码过期");
+                    this.clearChecker();
+                    this.init();
                 } else if (res.data.code === 803) {
-                // 授权成功
-                this.clearChecker();
-                this.getAccountInfo();
+                    // 授权成功
+                    console.log("授权成功");
+                    this.clearChecker();
+                    this.getAccountInfo();
                 }
             }, 2000);
         },
@@ -72,6 +74,12 @@ export default {
             clearInterval(this.timer);
             this.timer = null;
         },
+
+        // 点击刷新二维码
+        refreshQrCode() {
+            this.clearChecker();
+            this.init();
+        }
     },
     beforeUnmount() {
         this.clearChecker();
@@ -85,6 +93,7 @@ export default {
 
   img {
     height: 120px;
+    cursor: pointer;
   }
 }
 </style>
