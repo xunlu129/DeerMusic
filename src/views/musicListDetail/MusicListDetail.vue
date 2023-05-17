@@ -78,7 +78,7 @@
                               stripe
                               lazy
                               :row-key="(row) => { return row.id; }"
-                              v-infinite-scroll="this.$store.state.isLogin ? loadMore : ''"
+                              v-infinite-scroll="loadMore"
                               :infinite-scroll-disabled="scrollLoadDisabled"
                               :infinite-scroll-distance="1500"
                               :infinite-scroll-immediate="false"
@@ -107,7 +107,7 @@
                         <el-table-column prop="dt" label="时长" min-width="50"></el-table-column>
                     </el-table>
                     <div class="loadMore" v-if="isMore && !this.$store.state.isLogin">
-                        登陆后查看更多音乐
+                        登录后查看更多音乐
                     </div>
                     <div class="placeholder" v-else></div>
                 </el-tab-pane>
@@ -335,7 +335,7 @@ export default {
         async likeMusic(musicId) {
             // 判断是否登录
             if (!this.$store.state.isLogin) {
-                this.$message.warning("只有登陆后才能点赞哦!");
+                this.$message.warning("只有登录后才能点赞哦!");
                 return;
             }
             // console.log(musicId);
@@ -392,8 +392,10 @@ export default {
             if (
                 serve != "/m7" &&
                 serve != "/m701" &&
+                serve != "/m702" &&
                 serve != "/m8" &&
-                serve != "/m801"
+                serve != "/m801" &&
+                serve != "/m802"
             ) {
                 // 没有对应的代理
                 this.$message.error("匹配不到对应的代理,下载失败!");
@@ -526,7 +528,7 @@ export default {
         // 触底加载所有音乐的回调
         loadMore() {
             if (!this.$store.state.isLogin) {
-                this.$message.error("请先进行登录操作!");
+                // this.$message.error("请先进行登录操作!");
                 return;
             }
             // console.log("加载所有音乐");
@@ -667,7 +669,9 @@ export default {
         this.$nextTick(() => {
             // 判断是否和正在播放的歌单相同
             if (this.$route.params.id == this.$store.state.musicListId) {
-                this.handleDOM(this.$store.state.musicId);
+                setTimeout(() => {
+                    this.handleDOM(this.$store.state.musicId);
+                }, 50); // 延迟执行，等待里面的数据渲染了再处理DOM，可以根据实际情况调整延迟时间
             }
         });
     },

@@ -162,7 +162,7 @@ export default {
         },
         // 监听当前下载音乐信息
         "$store.state.downloadMusicInfo"(current) {
-            console.log(current.url);
+            // console.log(current.url);
             axios.get(current.url, { responseType: "blob" })
             .then((res) => {
                 let blob = res.data;
@@ -180,7 +180,7 @@ export default {
             .catch((err) => {
                 console.log(err);
                 if (err.request.statusText == "Forbidden") {
-                    this.$message.error("您不是黑胶会员，下载失败!");
+                    this.$message.error("该歌曲暂无版权，无法下载!");
                 } else {
                     this.$message.error("下载失败，请稍后尝试");
                 }

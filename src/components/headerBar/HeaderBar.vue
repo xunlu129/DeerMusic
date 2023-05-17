@@ -51,7 +51,7 @@
                         <Login v-if="isAccountPopShow" 
                                @getUserInfo="(info) => {userInfo = info; isAccountPopShow = false;}"/>
                     </el-popover>
-                    <img :src="userInfo.avatarUrl" alt="" v-else />
+                    <img :src="userInfo.avatarUrl" alt="" v-else @click="goToPersonal" />
                 </div>
                 <div class="userName" v-if="userInfo.avatarUrl">{{ userInfo.nickname }}</div>
                 <div class="userName" v-else>点击头像登录</div>
@@ -105,6 +105,16 @@ export default {
                     window.localStorage.removeItem('userId');
                 }
             }
+        },
+
+        // 跳转到个人主页
+        goToPersonal() {
+            if (this.$route.path != `/personal/${this.userInfo.userId}`) {
+                this.$router.push({
+                    name: 'personal',
+                    params: { uid: this.userInfo.userId },
+                })
+            }
         }
     },
     async created() {
@@ -120,10 +130,10 @@ export default {
     },
     watch: {
         '$store.state.isLogin'(current) {
-        // 如果退出登录后数据还没清空，则清空数据
-        if (!current && this.userInfo.nickname) {
-            this.userInfo = {};
-        }
+            // 如果退出登录后数据还没清空，则清空数据
+            if (!current && this.userInfo.nickname) {
+                this.userInfo = {};
+            }
         },
     },
 }
