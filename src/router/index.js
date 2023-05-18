@@ -27,7 +27,7 @@ const routes = [
                         component: MusicList,
                         redirect: '/discover/musiclist/musiclistindex',
                         children: [
-                            { path: '/discover/musiclist/musiclistindex', component: MusicListIndex },
+                            { path: '/discover/musiclist/musiclistindex', name: 'musicListIndex', component: MusicListIndex },
                         ]
                     },
                     { path: '/discover/ranking', component: Ranking },

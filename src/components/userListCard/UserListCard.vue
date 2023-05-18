@@ -9,10 +9,10 @@
              :key="index">
             <div class="userItem">
                 <div class="left">
-                    <img :src="item.avatarUrl + '?param200y200'" alt="" class="avatar" @click="clickUser(item.userId)" />
+                    <img :src="item.avatarUrl + '?param200y200'" alt="" class="avatar" @click="goToPersonal(item.userId)" />
                 </div>
                 <div class="right">
-                    <div class="userName"><span @click="clickUser(item.userId)">{{ item.nickname }}</span></div>
+                    <div class="userName"><span @click="goToPersonal(item.userId)">{{ item.nickname }}</span></div>
                     <div class="signature">{{ item.signature }}</div>
                     <div class="nums" v-if="userType == 'personalPage'">
                         <div class="musicListNum">{{ "歌单：" + item.playlistCount }}</div>
@@ -64,10 +64,12 @@ export default {
             this.disabled = true;
         },
         // 点击用户跳转用户主页
-        clickUser(id) {
-            console.log(id);
-
-        }
+        goToPersonal(userId) {
+            this.$router.push({
+                name: 'personal',
+                params: { uid: userId },
+            })
+        },
     },
     watch: {
         // 数据更新后，可再次触发load事件

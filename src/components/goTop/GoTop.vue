@@ -1,7 +1,7 @@
 <template>
     <!-- 使用注意：滚动的盒子必须有个固定的高度，且设有 overflow-y:scroll; 否则会出现scrollTop=0的情况 -->
     <div class="GoTop"
-         :class="isGoTopShow ? 'showBtn' : isFirstLoad ? '' : 'hideBtn'"
+         :class="isGoTopShow ? 'showBtn' : 'hideBtn'"
          @click="goTop">
         <i class="iconfont icon-fanhuidingbu"></i>
     </div>
@@ -25,8 +25,8 @@ export default {
         return {
             // 是否显示该组件
             isGoTopShow: false,
-            // 是否是第一次加载  第一次加载组件不需要添加hideBtn类
-            isFirstLoad: true,
+            // // 是否是第一次加载  第一次加载组件不需要添加hideBtn类
+            // isFirstLoad: true,
         }
     },
     methods: {
@@ -50,7 +50,7 @@ export default {
             // console.log(obj.scrollTop);
             if (this.el.scrollTop >= 500 && this.isGoTopShow == false) {
                 this.isGoTopShow = true;
-                this.isFirstLoad ? (this.isFirstLoad = false) : "";
+                // this.isFirstLoad ? (this.isFirstLoad = false) : "";
             } else if (this.el.scrollTop < 500 && this.isGoTopShow) {
                 this.isGoTopShow = false;
             }

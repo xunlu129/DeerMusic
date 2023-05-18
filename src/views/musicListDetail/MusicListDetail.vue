@@ -17,7 +17,7 @@
                     <div class="userAvatar">
                         <img :src="musicListDetail.creator.avatarUrl" alt="" />
                     </div>
-                    <div class="userName">
+                    <div class="userName" @click="goToPersonal(musicListDetail.creator.userId)">
                         {{ musicListDetail.creator.nickname }}
                     </div>
                     <div class="createTime">
@@ -35,6 +35,10 @@
                         <i class="iconfont icon-xihuan" :class="isSub ? 'red' : ''"></i>
                         <span>{{ isSub ? "已收藏" : "收藏" }}({{ subscribedCount }})</span>
                     </div>
+                    <div class="buttonItem disable" v-else>
+                        <i class="iconfont icon-xihuan"></i>
+                        <span>收藏({{ subscribedCount }})</span>
+                    </div>
                     <div class="buttonItem">
                         <i class="iconfont icon-zhuanfa"></i>
                         <span>分享({{ shareCount }})</span>
@@ -44,7 +48,7 @@
                 <div class="tags">
                     标签&nbsp;:
                     <div class="tagItems" v-for="(item, index) in musicListDetail.tags" :key="index">
-                        <div class="tagItem">{{ item }}</div>
+                        <div class="tagItem" @click="jumpMusicList(item)">{{ item }}</div>
                         <span v-if="index != musicListDetail.tags.length - 1">/</span>
                     </div>
                     <div style="margin-left: 5px;" v-if="musicListDetail.tags.length == 0">暂无标签</div>
@@ -111,7 +115,7 @@
                     </div>
                     <div class="placeholder" v-else></div>
                 </el-tab-pane>
-                <el-tab-pane label="评论" name="second">
+                <el-tab-pane :label="'评论(' + musicListDetail.commentCount + ')'" name="second">
                     <div class="commentList"
                          v-if="comments.comments"
                          v-loading="isCommentLoading">
@@ -153,6 +157,11 @@
                                        @current-change="commentPageChange">
                         </el-pagination>
                     </div>
+                    <div class="tips" v-if="comments.comments
+                                            ? comments.comments.length == 0 
+                                            ? true : false : false">
+                        <span>暂无评论</span>
+                    </div>
                 </el-tab-pane>
                 <el-tab-pane label="收藏者" name="third">
                     <!--使用.slice()将followedsListData.followedsList的值复制到一个新数组中。
@@ -161,6 +170,11 @@
                                   :userList="followedsListData.followedsList.slice()"
                                   :isLoad="followedsListData.isMore"
                                   @bottomLoad="bottomLoad"></UserListCard>
+                    <div class="tips" v-if="followedsListData.followedsList
+                                            ? followedsListData.followedsList.length == 0
+                                            ? true : false : false">
+                        <span>暂无收藏者</span>
+                    </div>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -307,6 +321,7 @@ export default {
                 this.$message.error("获取评论失败,请稍后重试!");
             }
             this.comments = res.data;
+            // console.log("评论数据: ", this.comments);
             this.isCommentLoading = false;
         },
 
@@ -655,6 +670,30 @@ export default {
                 }
             }
         },
+
+        // 跳转到个人主页
+        goToPersonal(userId) {
+            this.$router.push({
+                name: 'personal',
+                params: { uid: userId },
+            })
+        },
+
+        // 跳转类别歌单
+        async jumpMusicList(value) {
+            // console.log(value);
+            // 先获取歌单类别数据，更新vuex的musicListTag
+            let res = await this.$request("/playlist/catlist");
+            // console.log("歌单分类列表: ", res);
+            let index = res.data.sub.findIndex(
+                (item) => item.name == value
+            );
+            res = res.data.sub[index];
+            // 将歌单分类更新到vuex
+            this.$store.commit("updateMusicListTag", res);
+            // console.log("歌单类别", res);
+            this.$router.push({ name: "musicListIndex" });
+        },
     },
     async mounted() {
         await this.getmusicListDetail();
@@ -809,6 +848,20 @@ export default {
     margin-right: 3px;
 }
 
+.disable {
+    border: 1px solid #ddd !important;
+    color: #ccc;
+    cursor: auto !important;
+}
+
+.disable:hover {
+    filter: none !important;
+}
+
+.disable i {
+    cursor: auto !important;
+}
+
 .playAll {
     font-size: 15px !important;
     background-color: #D89F55;
@@ -894,13 +947,18 @@ export default {
     height: 50px;
 }
 
-
-
-
 .page {
     width: 100%;
     display: flex;
     justify-content: center;
     padding-bottom: 40px;
+}
+
+.tips {
+    margin: 30px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #6d6d6d;
 }
 </style>

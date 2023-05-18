@@ -23,14 +23,14 @@
             </div>
             <div class="commentMain">
                 <div class="commentContent">
-                    <span class="commentUserNickName">
+                    <span class="commentUserNickName" @click="goToPersonal(item.user.userId)">
                         {{ item.user.nickname }}&nbsp;:&nbsp;
                     </span>
                     <span>{{ item.content }}</span>
                 </div>
                 <div class="replied">
                     <div class="repliedItem" v-for="(item1, index1) in item.beReplied" :key="index1">
-                        <span class="repliedUser">
+                        <span class="repliedUser" @click="goToPersonal(item1.user.userId)">
                             @{{ item1.user.nickname }}&nbsp;:&nbsp;
                         </span>
                         <span class="repliedContent">{{ item1.content }}</span>
@@ -316,6 +316,14 @@ export default {
                     console.log("修改评论模式为普通评论");
                 }
             }
+        },
+
+        // 跳转到个人主页
+        goToPersonal(userId) {
+            this.$router.push({
+                name: 'personal',
+                params: { uid: userId },
+            })
         },
 
         showDate(value) {

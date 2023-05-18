@@ -29,6 +29,8 @@ export default createStore({
             name: '',
             url: '',
         },
+        // 查询的歌单分类
+        musicListTag: {},
     },
     mutations: {
         //更新登录状态
@@ -88,6 +90,11 @@ export default createStore({
         // 更新当前下载的音乐信息
         updateDownloadMusicInfo(state, info) {
             state.downloadMusicInfo = info;
+        },
+        // 更新要查询的歌单分类（用于其他页面跳转）
+        updateMusicListTag(state, musicListTag) {
+            state.musicListTag = musicListTag;
+            // console.log("当前歌单类别: ", state.musicListTag);
         },
     }
 })
