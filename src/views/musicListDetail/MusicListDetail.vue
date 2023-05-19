@@ -87,7 +87,7 @@
                               :infinite-scroll-distance="1500"
                               :infinite-scroll-immediate="false"
                               @row-dblclick="clickRow">
-                        <el-table-column label="" width="42" type="index" :index="handleIndex"></el-table-column>
+                        <el-table-column label="" width="45" type="index" :index="handleIndex"></el-table-column>
                         <el-table-column label="" width="42">
                             <!--喜欢按钮-->
                             <template #default="scope">

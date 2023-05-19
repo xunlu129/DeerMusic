@@ -8,6 +8,8 @@ const Singer = () => import('views/discover/discoverChildren/SingerView.vue')
 const MusicListIndex = () => import('views/discover/discoverChildren/musicListChildren/MusicListIndex.vue')
 const MusicListDetail = () => import('views/musicListDetail/MusicListDetail.vue')
 const Personal = () => import('views/personal/PersonalView.vue')
+const Follows = () => import('views/personal/personalChildren/FollowsView.vue')
+const Followeds = () => import('views/personal/personalChildren/FollowedsView.vue')
 
 const routes = [
     {path: '/', redirect: '/index'},
@@ -36,6 +38,8 @@ const routes = [
             },
             { path: '/musiclistdetail/:id', name: 'musicListDetail', component: MusicListDetail },
             { path: '/personal/:uid', name: 'personal', component: Personal },
+            { path: '/personal/follows/:uid', name: 'follows', component: Follows },
+            { path: '/personal/followeds/:uid', name: 'followeds', component: Followeds },
         ]
     }
 ]

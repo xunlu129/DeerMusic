@@ -2,7 +2,7 @@
     <div class="UserListCard"
          v-infinite-scroll="load"
          :infinite-scroll-disabled="disabled"
-         :infinite-scroll-distance="300"
+         :infinite-scroll-distance="600"
          :infinite-scroll-immediate="false">
         <div class="userItemContainer"
              v-for="(item, index) in userList"
@@ -93,11 +93,13 @@ export default {
 .UserListCard {
     display: flex;
     flex-wrap: wrap;
+    align-content: flex-start;
     height: 100%;
 }
 
 .userItemContainer {
     margin: 0 auto;
+    height: 140px;
 }
 
 .userItem {

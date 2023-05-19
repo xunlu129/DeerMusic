@@ -35,13 +35,21 @@
                             </div>
                         </div>
                         <div class="numItem">
-                            <div class="box">
+                            <div class="box"
+                                 @click="$router.push({
+                                    name: 'follows',
+                                    params: { uid: $route.params.uid },
+                                 })">
                                 <div class="numItemTop">{{ userInfo.newFollows }}</div>
                                 <div class="numItemBottom">关注</div>
                             </div>
                         </div>
                         <div class="numItem">
-                            <div class="box">
+                            <div class="box"
+                                 @click="$router.push({
+                                    name: 'followeds',
+                                    params: { uid: $route.params.uid },
+                                 })">
                                 <div class="numItemTop">{{ userInfo.followeds }}</div>
                                 <div class="numItemBottom">粉丝</div>
                             </div>
@@ -120,6 +128,7 @@ export default {
             // 增加用户等级
             res.data.profile['level'] = res.data.level;
             // 地区码转义
+            // 做完了之后才发现可以调用"/countries/code/list"api接口获取国家编码列表。。。
             if (res.data.profile.province != 1000000) {
                 // 1000000就是没设置
                 for (var i = 0; i < provinceAndCity.length; i ++) {
