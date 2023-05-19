@@ -79,19 +79,23 @@ export default {
             });
             // console.log("精品歌单: ", result);
             this.theFirstOfHighquality = result.data.playlists[0];
-            console.log("精品歌单详情: ", this.theFirstOfHighquality);
+            // console.log("精品歌单详情: ", this.theFirstOfHighquality);
         },
         // 获取歌单分类数据
         async getSortList() {
             let res = await this.$request("/playlist/catlist");
-            console.log("歌单分类列表: ", res);
+            // console.log("歌单分类列表: ", res);
             this.sortList = res.data.sub;
         },
         // 获取热门歌单tag数据
         async getHotTag() {
             let res = await this.$request("/playlist/hot");
-            console.log("热门歌单tag: ", res);
-            this.currentTag = res.data.tags[0];
+            // console.log("热门歌单tag: ", res);
+            // 如果当前tag是空的就改
+            if (Object.keys(this.currentTag).length === 0) {
+                this.currentTag = res.data.tags[0];
+            }
+            // console.log("当前分类详情: ", this.currentTag);
             this.hotTags = res.data.tags;
         },
         // 根据分类名获取歌单列表
@@ -109,6 +113,8 @@ export default {
         // 点击sortBoxItem中的回调
         clickSortBoxItem(item) {
             this.currentTag = item;
+            // 将歌单分类更新到vuex
+            this.$store.commit("updateMusicListTag", this.currentTag);
             this.currentPage = 1;
             this.getMusicList();
         },
@@ -116,6 +122,8 @@ export default {
         clickSecondBarItem(index) {
             // console.log(this.hotTags[index]);
             this.currentTag = this.hotTags[index];
+            // 将歌单分类更新到vuex
+            this.$store.commit("updateMusicListTag", this.currentTag);
             this.currentPage = 1;
             this.getMusicList();
         },
@@ -131,6 +139,8 @@ export default {
         },
     },
     async created() {
+        this.currentTag = this.$store.state.musicListTag;
+        // console.log("当前vuex里的歌单类别: ", this.currentTag);
         this.getTheFirstOfHighquality();
         await this.getHotTag();
         this.getMusicList();

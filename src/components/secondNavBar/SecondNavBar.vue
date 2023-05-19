@@ -48,8 +48,18 @@ export default {
             this.$emit("clickSecondBarItem", index);
         }
     },
+    mounted() {
+        setTimeout(() => {
+            // console.log(this.SecondNavBarData);
+            this.activeNum = this.SecondNavBarData.findIndex(
+                (item) => item.name == this.currentTag.name
+            );
+            // console.log(this.activeNum);
+        }, 50); // 延迟执行，等待SecondNavBarData的数据获取
+    },
     watch: {
         currentTag(current) {
+            // console.log("监听到当前分类有变化: ", current);
             this.activeNum = this.SecondNavBarData.findIndex(
                 (item) => item.name == current.name
             );
