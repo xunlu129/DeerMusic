@@ -37,7 +37,7 @@ export default {
         // 请求轮播图数据
         async getBannerData() {
             let result = await this.$request("/banner");
-            console.log("轮播图数据: ", result);
+            // console.log("轮播图数据: ", result);
             this.bannerData = result.data.banners;
         },
         // 请求推荐歌单数据的前十个

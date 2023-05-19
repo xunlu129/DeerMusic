@@ -12,7 +12,7 @@
             </div>
             <!--搜索框-->
             <div class="search">
-                <el-popover popper-class="searchPop" 
+                <!-- <el-popover popper-class="searchPop" 
                             popper-style="width: 350px; height: 450px; padding: 12px 12px 0 12px !important;" 
                             placement="bottom" 
                             :visible="isSearchPopShow"
@@ -24,12 +24,105 @@
                                   @focus="searchPopShow()"
                                   @blur="searchPopHide()"></el-input>
                     </template>
-                    <!--热搜榜-->
                     <div style="width: 100%; height: 100%;">
                         这里是热搜榜
                         <el-button @click="searchPopHide()">确认</el-button>
                     </div>
-                </el-popover>
+                </el-popover> -->
+                <!-- 因为element-plus的气泡组件实在实现不了我想要的效果，干脆自己写了一个:-( -->
+                <el-input placeholder="请输入内容" 
+                          prefix-icon="Search" 
+                          v-model="searchInput"
+                          @input="inputSearch"
+                          @focus="searchPopShow()"
+                          ref="searchInput"></el-input>
+                <div :class="{ 'searchPopShow': isSearchPopShow, 'searchPopHide': !isSearchPopShow }"
+                     ref="searchPop"
+                     id="searchPop">
+                    <!-- 热搜榜 -->
+                    <div class="hotSearch" v-if="!searchSuggestList.songs">
+                        <div class="hotSearchTitle">热搜榜</div>
+                        <div class="hotSearchItem"
+                             v-for="(item, index) in hotSearchList"
+                             :key="index"
+                             @click="clickHotSearchItem(item.searchWord)">
+                            <div class="hotSearchIndex"
+                                 :class="index < 3 ? 'topThree' : ''">
+                                {{ index + 1 }}
+                            </div>
+                            <div class="hotSearchInfo">
+                                <div class="hotSearchWord"
+                                     :class="index < 3 ? 'hotSearchWordTopThree' : ''">
+                                    {{ item.searchWord }}
+                                </div>
+                                <div class="hotSearchContent">{{ item.content }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 搜索建议 -->
+                    <div class="searchSuggest">
+                        <div class="hotSearchTitle" v-if="searchSuggestList.songs">
+                            搜索建议
+                        </div>
+                        <!-- 单曲 -->
+                        <div class="searchSuggestItem"
+                             v-if="searchSuggestList.songs && searchSuggestList.songs.length != 0">
+                            <div class="searchSuggestItemTitle">
+                                <i class="iconfont icon-yinle"></i> 单曲
+                            </div>
+                            <div class="suggestItemDetail"
+                                 v-for="(item, index) in searchSuggestList.songs"
+                                 :key="index"
+                                 @click="clickSuggestSong(item.id)">
+                                {{ item.name }}
+                                <span v-if="item.alias.length != 0">({{ item.alias[0] }})</span>
+                                {{ " - " + item.artists[0].name }}
+                            </div>
+                        </div>
+                        <!-- 歌手 -->
+                        <div class="searchSuggestItem"
+                             v-if="searchSuggestList.artists &&
+                                   searchSuggestList.artists.length != 0">
+                            <div class="searchSuggestItemTitle">
+                                <i class="iconfont icon-mic"></i> 歌手
+                            </div>
+                            <div class="suggestItemDetail"
+                                 v-for="(item, index) in searchSuggestList.artists"
+                                 :key="index"
+                                 @click="clickSuggestSinger(item.id)">
+                                {{ item.name }}
+                            </div>
+                        </div>
+                        <!-- 专辑 -->
+                        <div class="searchSuggestItem"
+                             v-if="searchSuggestList.albums &&
+                                   searchSuggestList.albums.length != 0">
+                            <div class="searchSuggestItemTitle">
+                                <i class="iconfont icon-more"></i> 专辑
+                            </div>
+                            <div class="suggestItemDetail"
+                                 v-for="(item, index) in searchSuggestList.albums"
+                                 :key="index"
+                                 @click="clickSuggestAlbum(item.id)">
+                                {{ item.name + " - " + item.artist.name }}
+                            </div>
+                        </div>
+                        <!-- 歌单 -->
+                        <div class="searchSuggestItem"
+                             v-if="searchSuggestList.playlists &&
+                                   searchSuggestList.playlists.length != 0">
+                            <div class="searchSuggestItemTitle">
+                                <i class="iconfont icon-gedan"></i> 歌单
+                            </div>
+                            <div class="suggestItemDetail"
+                                 v-for="(item, index) in searchSuggestList.playlists"
+                                 :key="index"
+                                 @click="clickSuggestMusicList(item.id)">
+                                {{ item.name }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <!--账户相关-->
@@ -64,27 +157,30 @@
 
 <script>
 import Login from 'components/login/LoginPop.vue'
+// 节流定时器名称
+let timer;
 
 export default {
     components: {Login},
     name: 'HeaderBar',
     data() {
         return {
+            // 用户信息
             userInfo: {},
+            // 是否显示登录框
             isAccountPopShow: false,
+            // 是否显示热搜框
             isSearchPopShow: false,
+            // 需要搜索的内容
             searchInput: '',
+            // 热搜列表数据
+            hotSearchList: [],
+            // 搜索建议列表
+            searchSuggestList: {},
         }
     },
     methods: {
-        searchPopShow() {
-            this.isSearchPopShow = true;
-        },
-
-        searchPopHide() {
-            this.isSearchPopShow = false;
-        },
-
+        // 请求
         // 获取当前用户信息
         async getCurrentUserInfo() {
             var timestamp = Date.parse(new Date());
@@ -107,6 +203,106 @@ export default {
             }
         },
 
+        // 获取热搜列表
+        async getHotSearch() {
+            let res = await this.$request('/search/hot/detail');
+            console.log("热搜列表: ", res);
+            this.hotSearchList = res.data.data;
+        },
+
+        // 获取搜索建议
+        async getSearchSuggest(keywords) {
+            let res = await this.$request('/search/suggest', { keywords });
+            console.log("搜索建议: ", res);
+            this.searchSuggestList = res.data.result;
+        },
+
+
+        // 事件
+        // 显示搜索框
+        searchPopShow() {
+            var searchPop = document.getElementById('searchPop');
+            searchPop.classList.remove('searchPopHidden');
+            // 设置延时，让searchPopHidden被移除后出现透明的searchPopHide，再显示搜索框，以达到淡入效果
+            setTimeout(() => {
+                this.isSearchPopShow = true;
+            }, 50);
+        },
+
+        // 隐藏搜索框
+        searchPopHide() {
+            this.isSearchPopShow = false;
+            var searchPop = document.getElementById('searchPop');
+            // 设置延时，让搜索框淡出后再隐藏透明的searchPopHide
+            setTimeout(() => {
+                searchPop.classList.add('searchPopHidden');
+            }, 300);
+            
+        },
+
+        // 点击搜索框和气泡框外的空白处关闭气泡
+        handleOutsideClick(event) {
+            const inputElement = this.$refs.searchInput.$el; // 输入框元素
+            const popoverElement = this.$refs.searchPop; // 气泡框元素
+            if (
+                !inputElement.contains(event.target) &&
+                !popoverElement.contains(event.target)
+            ) {
+                this.searchPopHide();
+            }
+        },
+
+        // 在搜索框中输入的回调
+        inputSearch(e) {
+            // console.log(e);
+            clearTimeout(timer);
+            if (e != '') {
+                timer = setTimeout(() => {
+                    this.getSearchSuggest(e);
+                }, 500);
+            } else {
+                // 清空searchSuggestList
+                this.searchSuggestList = {};
+                return;
+            }
+        },
+
+        // 点击热搜榜item的回调
+        clickHotSearchItem(searchWord) {
+            this.searchInput = searchWord;
+            this.goSearch();
+        },
+
+        // 跳转至搜索详情页面
+        goSearch() {
+            this.searchPopHide();
+            // this.$router.push({ name: 'search', params: { id: this.searchInput } });
+        },
+
+        // 点击搜索建议中单曲的回调
+        async clickSuggestSong(id) {
+            console.log("搜索音乐id: ", id);
+            this.searchPopHide();
+        },
+
+        // 点击搜索建议中歌手的回调
+        clickSuggestSinger(id) {
+            console.log("搜索歌手id: ", id);
+            this.searchPopHide();
+        },
+
+        // 点击搜索建议中专辑的回调
+        clickSuggestAlbum(id) {
+            console.log("搜索专辑id: ", id);
+            this.searchPopHide();
+        },
+
+        // 点击搜索建议中歌单的回调
+        clickSuggestMusicList(id) {
+            console.log("搜索歌单id: ", id);
+            this.searchPopHide();
+        },
+
         // 跳转到个人主页
         goToPersonal() {
             if (this.$route.path != `/personal/${this.userInfo.userId}`) {
@@ -118,6 +314,7 @@ export default {
         }
     },
     async created() {
+        this.getHotSearch();
         this.getCurrentUserInfo();
 
         if (document.cookie.search('MUSIC_U=') != -1) {
@@ -135,6 +332,17 @@ export default {
                 this.userInfo = {};
             }
         },
+    },
+    mounted() {
+        // 页面渲染后创建点击事件的监听器
+        window.addEventListener("click", this.handleOutsideClick);
+        // 页面渲染后给搜索框增加隐藏类，否则存在一个透明的搜索框
+        var searchPop = document.getElementById('searchPop');
+        searchPop.classList.add('searchPopHidden');
+    },
+    beforeUnmount() {
+        // 页面结束渲染前销毁点击事件的监听器
+        window.removeEventListener("click", this.handleOutsideClick);
     },
 }
 </script>
@@ -235,5 +443,113 @@ export default {
     --el-input-height: 35px;
 }
 
+.searchPopShow {
+    position: absolute;
+    top: 60px;
+    left: 244px;
+    width: 380px;
+    height: 480px;
+    background-color: #fff;
+    border: 1px solid #ebeef5;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    border-radius: 5px;
+    opacity: 1; /* 透明度为1 */
+    transition: opacity 0.3s ease;
+}
+
+.searchPopHide {
+    position: absolute;
+    top: 60px;
+    left: 244px;
+    width: 380px;
+    height: 480px;
+    background-color: #fff;
+    border: 1px solid #ebeef5;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    border-radius: 5px;
+    opacity: 0; /* 透明度为0 */
+    transition: opacity 0.3s ease;
+}
+
+.searchPopHidden {
+    display: none;  /* 真正隐藏搜索框 */
+}
+
+.hotSearch {
+    height: 100%;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+.hotSearchTitle {
+    font-size: 18px;
+    padding: 20px 0 8px 25px;
+}
+
+.hotSearchItem {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    height: 60px;
+    cursor: pointer;
+}
+
+.hotSearchItem:hover {
+    background-color: #f2f2f2;
+}
+
+.hotSearchIndex {
+    margin-left: 20px;
+    width: 40px;
+    color: #aaa;
+}
+
+.topThree {
+    color: #e13e3e;
+}
+
+.hotSearchWord {
+    font-size: 15px;
+    color: rgb(51, 51, 51);
+}
+
+.hotSearchWordTopThree {
+    font-weight: 600;
+    color: black;
+}
+
+.hotSearchContent {
+    font-size: 13px;
+    margin-top: 5px;
+    color: rgb(132, 132, 132);
+}
+
+.searchSuggest {
+    height: 100%;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+.searchSuggestItemTitle {
+    background-color: #f7f7f7;
+    padding: 10px 10px;
+    font-size: 17px;
+}
+
+.suggestItemDetail {
+    padding: 10px 32px;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.suggestItemDetail:hover {
+    background-color: #f2f2f2;
+}
+
+.suggestItemDetail span {
+    color: #ccc;
+}
 
 </style>
