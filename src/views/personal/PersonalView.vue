@@ -1,5 +1,5 @@
 <template>
-    <div class="Personal">
+    <div class="personal">
         <!-- 用户信息 -->
         <div class="userInfo" v-if="userInfo.avatarUrl">
             <div class="left">
@@ -214,7 +214,7 @@ export default {
 </script>
 
 <style scoped>
-.Personal {
+.personal {
     height: calc(100vh - 145px);
     overflow-y: scroll;
 }

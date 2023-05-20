@@ -31,6 +31,8 @@ export default createStore({
         },
         // 查询的歌单分类
         musicListTag: {},
+        // 搜索页面你可能感兴趣内容
+        multiMatch: [],
     },
     mutations: {
         //更新登录状态
@@ -96,5 +98,8 @@ export default createStore({
             state.musicListTag = musicListTag;
             // console.log("当前歌单类别: ", state.musicListTag);
         },
+        updateMultiMatch(state, multiMatch) {
+            state.multiMatch = multiMatch;
+        }
     }
 })

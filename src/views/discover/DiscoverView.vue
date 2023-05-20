@@ -1,6 +1,6 @@
 <template>
     <div class="discoverContainer">
-        <NavBar @clickBarItem="clickBarItem" :navBarItem="navBarData"></NavBar>
+        <NavBar @clickBarItem="clickBarItem" :navBarItem="navBarData" style="padding-left: 40px;"></NavBar>
         <router-view class="discover"></router-view>
     </div>
 </template>
