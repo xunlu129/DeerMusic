@@ -455,6 +455,7 @@ export default {
         },
         // 监听currentIndex的变化
         "$store.state.currentIndex"(currentIndex, lastIndex) {
+            console.log(currentIndex, lastIndex);
             if (this.hasDrawerOpened) {
                 this.handleDrawerListDOM(currentIndex, lastIndex);
             }

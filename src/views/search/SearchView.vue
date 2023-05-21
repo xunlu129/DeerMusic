@@ -51,9 +51,9 @@
         <!-- 导航栏 -->
         <div class="navBar">
             <NavBar :navBarItem="navBarData" @clickBarItem="clickBarItem" style="padding-left: 5px;"></NavBar>
-            <div class="info">找到 300 首单曲</div>
+            <div class="info">{{ searchInfo }}</div>
         </div>        
-        <router-view></router-view>
+        <router-view @getSearchInfo="getSearchInfo"></router-view>
     </div>
 </template>
 
@@ -70,6 +70,8 @@ export default {
         return {
             // 多重匹配列表
             multiMatch: [],
+            // 搜索信息
+            searchInfo: "",
             // 导航栏列表
             navBarData: [
                 {
@@ -163,6 +165,12 @@ export default {
         // 点击感兴趣视频的回调
         clickVideo(id) {
             console.log("视频id: ", id);
+        },
+
+        // 更新返回的搜索信息
+        getSearchInfo(info) {
+            this.searchInfo = info;
+            // console.log(this.searchInfo);
         }
     },
     created() {
