@@ -58,7 +58,6 @@ export default createStore({
             // 当歌单id发生变化时,重置当前播放音乐索引
             if (payload.musicListId != state.musicListId) {
                 state.musicListId = payload.musicListId;
-                state.currentIndex = -1;
             }
             // 对歌单进行深拷贝再赋值 直接赋值是浅拷贝
             // 歌单是固定的死数据，而vuex中的musicList是动态的

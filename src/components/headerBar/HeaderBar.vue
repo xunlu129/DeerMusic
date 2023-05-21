@@ -208,7 +208,7 @@ export default {
         // 获取热搜列表
         async getHotSearch() {
             let res = await this.$request('/search/hot/detail');
-            console.log("热搜列表: ", res);
+            // console.log("热搜列表: ", res);
             this.hotSearchList = res.data.data;
         },
 

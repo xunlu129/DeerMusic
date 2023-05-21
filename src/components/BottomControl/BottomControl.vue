@@ -433,6 +433,11 @@ export default {
         }
     },
     watch: {
+        // 监听播放列表的变化，一定要有这个，否则vuex中musicId没变化时，抽屉列表不渲染
+        "$store.state.musicList"(list) {
+            this.musicList = list;
+            this.getMusicDetailFromMusicList();
+        },
         // 监听vuex中musicId的变化
         "$store.state.musicId"(id) {
             // console.log("vuex中的id发生了变化");
@@ -455,7 +460,7 @@ export default {
         },
         // 监听currentIndex的变化
         "$store.state.currentIndex"(currentIndex, lastIndex) {
-            console.log(currentIndex, lastIndex);
+            // console.log(currentIndex, lastIndex);
             if (this.hasDrawerOpened) {
                 this.handleDrawerListDOM(currentIndex, lastIndex);
             }

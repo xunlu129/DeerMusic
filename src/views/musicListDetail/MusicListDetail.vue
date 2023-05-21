@@ -467,6 +467,8 @@ export default {
         // 事件函数
         // 点击播放全部按钮的回调
         async playAll() {
+            // 一定要有这一步，否则当监听的musicId没变化时，颜色不渲染
+            this.handleDOM(this.$store.state.musicId);
             // 一定要先更新歌单再更新歌曲，不然播放时获取不到歌单
             // 如果歌单发生变化，则提交歌单到vuex
             if (this.musicListDetail.id != this.$store.state.musicListId) {
@@ -484,17 +486,22 @@ export default {
                         musicListId: this.musicListDetail.id,
                     });
                 }
+                this.$store.commit("updateCurrentIndex", 0);
             }     
             // 将当前播放歌曲设为该歌单第一首
-            this.$store.commit("updateMusicId", this.musicListDetail.tracks[0].id);       
+            this.$store.commit("updateMusicId", this.musicListDetail.tracks[0].id);
         },
 
         // 双击table的row的回调
         async clickRow(row) {
             // console.log(row);
+            // 一定要有这一步，否则当监听的musicId没变化时，颜色不渲染
+            this.handleDOM(this.$store.state.musicId);
             // 一定要先更新歌单再更新歌曲，不然播放时获取不到歌单
             // 如果歌单发生变化,则提交歌单到vuex
             if (this.musicListDetail.id != this.$store.state.musicListId) {
+                // 求得当前歌曲在该歌单的索引上传到vuex
+                let currentIndex = this.musicListDetail.tracks.findIndex((item) => item.id == row.id);
                 // 判断是否登录选择播放的歌曲
                 if (this.$store.state.isLogin) {
                     let result = await this.getAllMusicDetail();
@@ -508,6 +515,7 @@ export default {
                         musicListId: this.musicListDetail.id,
                     });
                 }
+                this.$store.commit("updateCurrentIndex", currentIndex);
             }
             // let result = await this.$request("/song/url", { id: row.id, br: 320000 });
             // console.log(result.data.data[0].url);
@@ -561,6 +569,12 @@ export default {
             ids = ids.substr(0, ids.length - 1);
             // console.log(ids);
             this.getMusicDetail(ids);
+            // 判断是否和正在播放的歌单相同
+            if (this.$route.params.id == this.$store.state.musicListId) {
+                setTimeout(() => {
+                    this.handleDOM(this.$store.state.musicId);
+                }, 50); // 延迟执行，等待里面的数据渲染了再处理DOM，可以根据实际情况调整延迟时间
+            }
         },
 
         // 点击el-tab-pane的回调
