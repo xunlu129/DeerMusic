@@ -24,7 +24,15 @@
                     <i class="iconfont icon-download" @click="downloadCurrentMusic(scope.row)"></i>
                 </template>
             </el-table-column>
-            <el-table-column prop="name" label="音乐标题" min-width="350"></el-table-column>
+            <el-table-column label="音乐标题" min-width="350">
+                <template #default="scope">
+                    <div class="musicName">{{ scope.row.name }} 
+                        <div class="alia" v-if="scope.row.alia.length != 0">
+                            ({{ scope.row.alia[0] }})
+                        </div>
+                    </div>
+                </template>
+            </el-table-column>
             <el-table-column prop="ar[0].name" label="歌手" min-width="120"></el-table-column>
             <el-table-column prop="al.name" label="专辑" min-width="170"></el-table-column>
             <el-table-column prop="dt" label="时长" min-width="50"></el-table-column>
@@ -219,6 +227,19 @@ export default {
 
 .red {
     color: #EC4141;
+}
+
+.musicName {
+    display: flex;
+    align-items: center;
+}
+
+.alia {
+    color: #aaa;
+    margin-left: 5px;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
 }
 
 .page {

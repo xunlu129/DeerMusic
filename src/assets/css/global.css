@@ -23,4 +23,28 @@ body .btn-primary:hover {
   scrollbar-width: thin;
 }
 
+/* 播放列表右键菜单弹出 */
+.context-menu {
+  position: absolute;
+  background-color: #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  padding: 5px 0;
+  z-index: 50000;
+}
 
+.context-menu .menu-button {
+  display: block;
+  padding: 8px 15px;
+  color: black;
+  background-color: #fff;
+}
+
+.context-menu .menu-button:hover {
+  background-color: #e9e9e9;
+}
+
+.menu-button i {
+  font-size: 18px;
+  margin-right: 5px;
+}
