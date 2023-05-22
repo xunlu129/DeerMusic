@@ -105,7 +105,15 @@
                                 <i class="iconfont icon-download" @click="downloadCurrentMusic(scope.row)"></i>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="name" label="音乐标题" min-width="350"></el-table-column>
+                        <el-table-column label="音乐标题" min-width="350">
+                            <template #default="scope">
+                                <div class="musicName">{{ scope.row.name }} 
+                                    <div class="alia" v-if="scope.row.alia.length != 0">
+                                        ({{ scope.row.alia[0] }})
+                                    </div>
+                                </div>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="ar[0].name" label="歌手" min-width="120"></el-table-column>
                         <el-table-column prop="al.name" label="专辑" min-width="170"></el-table-column>
                         <el-table-column prop="dt" label="时长" min-width="50"></el-table-column>
@@ -470,24 +478,21 @@ export default {
             // 一定要有这一步，否则当监听的musicId没变化时，颜色不渲染
             this.handleDOM(this.$store.state.musicId);
             // 一定要先更新歌单再更新歌曲，不然播放时获取不到歌单
-            // 如果歌单发生变化，则提交歌单到vuex
-            if (this.musicListDetail.id != this.$store.state.musicListId) {
-                // 判断是否登录选择播放的歌曲
-                if (this.$store.state.isLogin) {
-                    let result = await this.getAllMusicDetail();
-                    // console.log(result);
-                    this.$store.commit("updateMusicList", {
-                        musicList: result,
-                        musicListId: this.musicListDetail.id,
-                    });
-                } else {
-                    this.$store.commit("updateMusicList", {
-                        musicList: this.musicListDetail.tracks,
-                        musicListId: this.musicListDetail.id,
-                    });
-                }
-                this.$store.commit("updateCurrentIndex", 0);
-            }     
+            // 判断是否登录选择播放的歌曲
+            if (this.$store.state.isLogin) {
+                let result = await this.getAllMusicDetail();
+                // console.log(result);
+                this.$store.commit("updateMusicList", {
+                    musicList: result,
+                    musicListId: this.musicListDetail.id,
+                });
+            } else {
+                this.$store.commit("updateMusicList", {
+                    musicList: this.musicListDetail.tracks,
+                    musicListId: this.musicListDetail.id,
+                });
+            }
+            this.$store.commit("updateCurrentIndex", 0);
             // 将当前播放歌曲设为该歌单第一首
             this.$store.commit("updateMusicId", this.musicListDetail.tracks[0].id);
         },
@@ -498,25 +503,22 @@ export default {
             // 一定要有这一步，否则当监听的musicId没变化时，颜色不渲染
             this.handleDOM(this.$store.state.musicId);
             // 一定要先更新歌单再更新歌曲，不然播放时获取不到歌单
-            // 如果歌单发生变化,则提交歌单到vuex
-            if (this.musicListDetail.id != this.$store.state.musicListId) {
-                // 求得当前歌曲在该歌单的索引上传到vuex
-                let currentIndex = this.musicListDetail.tracks.findIndex((item) => item.id == row.id);
-                // 判断是否登录选择播放的歌曲
-                if (this.$store.state.isLogin) {
-                    let result = await this.getAllMusicDetail();
-                    this.$store.commit("updateMusicList", {
-                        musicList: result,
-                        musicListId: this.musicListDetail.id,
-                    });
-                } else {
-                    this.$store.commit("updateMusicList", {
-                        musicList: this.musicListDetail.tracks,
-                        musicListId: this.musicListDetail.id,
-                    });
-                }
-                this.$store.commit("updateCurrentIndex", currentIndex);
+            // 求得当前歌曲在该歌单的索引上传到vuex
+            let currentIndex = this.musicListDetail.tracks.findIndex((item) => item.id == row.id);
+            // 判断是否登录选择播放的歌曲
+            if (this.$store.state.isLogin) {
+                let result = await this.getAllMusicDetail();
+                this.$store.commit("updateMusicList", {
+                    musicList: result,
+                    musicListId: this.musicListDetail.id,
+                });
+            } else {
+                this.$store.commit("updateMusicList", {
+                    musicList: this.musicListDetail.tracks,
+                    musicListId: this.musicListDetail.id,
+                });
             }
+            this.$store.commit("updateCurrentIndex", currentIndex);
             // let result = await this.$request("/song/url", { id: row.id, br: 320000 });
             // console.log(result.data.data[0].url);
             // this.$store.commit("updateMusicUrl", result.data.data[0].url);
@@ -945,6 +947,19 @@ export default {
 
 .icon-yixihuan:hover {
     color: #D73535 !important;
+}
+
+.musicName {
+    display: flex;
+    align-items: center;
+}
+
+.alia {
+    color: #aaa;
+    margin-left: 5px;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
 }
 
 .loadMore {

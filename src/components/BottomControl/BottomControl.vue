@@ -28,8 +28,9 @@
         <!--中间-->
         <div class="center">
             <div class="buttons">
-                <span @click="playType = playType == 'order' ? 'random' : 'order'">
+                <span @click="playType = playType == 'order' ? 'single' : playType == 'single' ? 'random' : 'order'">
                     <i class="iconfont icon-xunhuan" v-if="playType == 'order'"></i>
+                    <i class="iconfont icon-danquxunhuan" v-else-if="playType == 'single'"></i>
                     <i class="iconfont icon-suiji" v-else></i>
                 </span>
                 <span @click="musicList.length != 0 ? changeMusic('pre') : ''">
@@ -90,12 +91,16 @@
         </div>
         <!-- 抽屉 -->
         <el-drawer v-model="drawer" :with-header="false" width="500" append-to-body="true">
-            <div class="drawerHeader">共{{ musicList.length }}首</div>
+            <div class="drawerHeader">
+                <div class="total">共{{ musicList.length }}首</div>
+                <div class="deleteAll" @click="removeAllSong">清空列表</div>
+            </div>
             <el-table :data="musicList"
                       stripe
                       style="width: 100%"
                       :show-header="false"
                       @row-dblclick="clickRow"
+                      @row-contextmenu="showContextMenu"
                       highlight-current-row
                       lazy>
                 <el-table-column prop="name" width="250px"> </el-table-column>
@@ -151,6 +156,7 @@ export default {
         // 请求
         // 请求歌曲url
         async getMusicDetail(id) {
+            if (id == '') return;
             this.$store.commit("updateMusicLoadState", true);
             let result = await this.$request("/song/url", { id });
             // console.log(result);
@@ -250,6 +256,7 @@ export default {
         // audio开始或暂停播放的回调  在vuex中改变状态
         changeState(state) {
             this.$store.commit("changePlayState", state);
+            // console.log("更新播放状态: ", state);
         },
 
         // 切歌函数
@@ -262,6 +269,8 @@ export default {
                 let preIndex;
                 if (this.playType == "order") {
                     preIndex = currentMusicIndex - 1 < 0 ? this.musicList.length - 1 : currentMusicIndex - 1;
+                } else if (this.playType == "single") {
+                    preIndex = currentMusicIndex;
                 } else if (this.playType == "random") {
                     if (this.musicList.length == 1) {
                         preIndex = currentMusicIndex;
@@ -273,13 +282,19 @@ export default {
                         }
                     }
                 }
-                console.log("上一首歌的id: ", this.musicList[preIndex].id);
+                // console.log("上一首歌的id: ", this.musicList[preIndex].id);
                 this.$store.commit("updateMusicId", this.musicList[preIndex].id);
+                // 如果播放列表只有一首歌，vuex里的musicId不变是不会继续播放的，要加一个更新播放源
+                if (this.musicList.length == 1 || this.playType == "single") {
+                    this.getMusicDetail(this.musicList[preIndex].id);
+                }
             } else if (type == "next") {
                 let currentMusicIndex = this.currentMusicIndex;
                 let nextIndex;
                 if (this.playType == "order") {
                     nextIndex = currentMusicIndex + 1 == this.musicList.length ? 0 : currentMusicIndex + 1;
+                } else if (this.playType == "single") {
+                    nextIndex = currentMusicIndex;
                 } else if (this.playType == "random") {
                     if (this.musicList.length == 1) {
                         nextIndex = currentMusicIndex;
@@ -291,8 +306,12 @@ export default {
                         }
                     }
                 }
-                console.log("下一首歌的id: ", this.musicList[nextIndex].id);
+                // console.log("下一首歌的id: ", this.musicList[nextIndex].id);
                 this.$store.commit("updateMusicId", this.musicList[nextIndex].id);
+                // 如果播放列表只有一首歌，vuex里的musicId不变是不会继续播放的，要加一个更新播放源
+                if (this.musicList.length == 1 || this.playType == "single") {
+                    this.getMusicDetail(this.musicList[nextIndex].id);
+                }
             }
         },
 
@@ -425,6 +444,112 @@ export default {
             };
             console.log("下载音乐信息: ", downloadMusicInfo);
             this.$store.commit("updateDownloadMusicInfo", downloadMusicInfo);
+        },
+
+        // 右击抽屉歌曲的回调
+        showContextMenu(row, column, event) {
+            // 阻止浏览器默认的菜单弹出
+            event.preventDefault();
+            // 操纵原生DOM生成样式
+            const contextMenu = document.createElement('div');
+            contextMenu.classList.add('context-menu');
+            // 移除歌曲按钮样式
+            const deleteButton = document.createElement('div');
+            deleteButton.classList.add('menu-button');
+            const icon = document.createElement('i');
+            icon.classList.add('iconfont', 'icon-shanchu');
+            deleteButton.appendChild(icon);
+            const text = document.createElement('span');
+            text.textContent = '从播放列表中删除';
+            deleteButton.appendChild(text);
+            // 删除按钮的回调
+            deleteButton.addEventListener('click', () => {
+                this.removeSong(row.id);
+                document.body.removeChild(contextMenu);
+                document.removeEventListener('mousedown', handleClickOutside);
+            });
+            contextMenu.appendChild(deleteButton);
+            // 设置弹出框位置随鼠标位置
+            if (event.pageX > window.innerWidth - 200) {
+                contextMenu.style.left = (event.pageX - 190) + 'px';
+            } else {
+                contextMenu.style.left = (event.pageX + 10) + 'px';
+            }
+            contextMenu.style.top = (event.pageY + 10) + 'px';
+            document.body.appendChild(contextMenu);
+            // 点击空白处关闭弹出框
+            const handleClickOutside = (event) => {
+                if (!contextMenu.contains(event.target)) {
+                    document.body.removeChild(contextMenu);
+                    document.removeEventListener('mousedown', handleClickOutside);
+                }
+            };
+            // 添加事件监听器
+            document.addEventListener('mousedown', handleClickOutside);
+        },
+
+        // 点击删除按钮的回调
+        removeSong(id) {
+            console.log("从播放列表中删除: ", id);
+            // 首先获取当前的歌单列表和歌曲索引
+            let musicList = this.$store.state.musicList;
+            let currentIndex = this.$store.state.currentIndex;
+            // 找到要删除的歌的索引
+            let index = musicList.findIndex(song => song.id == id);
+            if (currentIndex == index) {
+                // 如果要删除的歌是当前播放的
+                if (musicList.length != 1) {
+                    // 播放列表不止一首歌，需要先切下一首
+                    this.changeMusic('next');
+                } else {
+                    // 如果只剩一首了，要先重置播放器
+                    // 先暂停当前播放的音乐
+                    this.pauseMusic();
+                    // 不知道为什么播放器不更新vuex里的状态，所以这里主动更新了
+                    this.$store.commit("changePlayState", false);
+                    lastSecond = 0;
+                    durationNum = 0;
+                    this.musicUrl = "";
+                    this.musicDetail = {};
+                    this.duration = "00:00";
+                    this.currentTime = 0;
+                    this.timeProgress = 0;
+                }                
+            }
+            // 不用考虑当前播放歌曲不是要删除的歌时去更新索引渲染，因为更新歌单时会自动更新渲染
+            // 从播放列表中删除
+            musicList.splice(index, 1);
+            // 将新播放列表上传vuex
+            this.$store.commit('updateMusicList', {
+                musicList,
+                musicListId: this.$store.state.musicListId,
+            });
+            // 更新当前播放歌曲要在更新列表之后
+            if (musicList.length == 0) {
+                this.$store.commit("updateMusicId", '');
+            }
+        },
+
+        // 清空播放列表
+        removeAllSong() {
+            // 先暂停当前播放的音乐，重置播放器
+            this.pauseMusic();
+            // 不知道为什么播放器不更新vuex里的状态，所以这里主动更新了
+            this.$store.commit("changePlayState", false);
+            lastSecond = 0;
+            durationNum = 0;
+            this.musicUrl = "";
+            this.musicDetail = {};
+            this.duration = "00:00";
+            this.currentTime = 0;
+            this.timeProgress = 0;
+            // 将空播放列表上传vuex
+            this.$store.commit('updateMusicList', {
+                musicList: [],
+                musicListId: this.$store.state.musicListId,
+            });
+            // 更新当前播放歌曲要在更新列表之后
+            this.$store.commit("updateMusicId", '');
         },
 
         // 格式化当前时间
@@ -571,6 +696,7 @@ export default {
 }
 
 .icon-xunhuan:hover, 
+.icon-danquxunhuan:hover,
 .icon-suiji:hover, 
 .icon-shangyishou:hover, 
 .icon-bofang:hover, 
@@ -660,8 +786,24 @@ export default {
 }
 
 .drawerHeader {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.total {
     font-size: 16px;
     color: #aaa;
-    padding: 15px;
+}
+
+.deleteAll {
+    font-size: 14px;
+    color: #6191c2;
+    cursor: pointer;
+}
+
+.deleteAll:hover {
+    color: #507ba6;
 }
 </style>
