@@ -12,7 +12,16 @@
                     <img :src="item.avatarUrl + '?param200y200'" alt="" class="avatar" @click="goToPersonal(item.userId)" />
                 </div>
                 <div class="right">
-                    <div class="userName"><span @click="goToPersonal(item.userId)">{{ item.nickname }}</span></div>
+                    <div class="userName">
+                        <span @click="goToPersonal(item.userId)">{{ item.nickname }}</span>
+                        <div class="gender"
+                             :class="item.gender == 1 ? 'nan' : 'nv'"
+                             v-if="item.gender == 1 || item.gender == 2">
+                            <!-- 0隐藏 1男 2女 -->
+                            <i class="iconfont icon-nan" v-if="item.gender == 1"></i>
+                            <i class="iconfont icon-nv" v-if="item.gender == 2"></i>
+                        </div>
+                    </div>
                     <div class="signature">{{ item.signature }}</div>
                     <div class="nums" v-if="userType == 'personalPage'">
                         <div class="musicListNum">{{ "歌单：" + item.playlistCount }}</div>
@@ -126,11 +135,38 @@ export default {
 .userName {
     font-size: 20px;
     margin: 12px 0 15px;
-    color: #373737;
+    display: flex;
+    align-items: center;
 }
 
 .userName span {
     cursor: pointer;
+    color: #373737;
+}
+
+.gender {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.nan {
+    background-color: #BFF3FF;
+    color: #57B1DB;
+}
+
+.nv {
+    background-color: #FFCCE7;
+    color: #EF77A9;
+}
+
+.gender .iconfont {
+    font-size: 16px;
+    cursor: auto !important;
 }
 
 .signature {

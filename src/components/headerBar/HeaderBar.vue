@@ -35,6 +35,7 @@
                           v-model="searchInput"
                           @input="inputSearch"
                           @focus="searchPopShow()"
+                          @keyup.enter="onSubmit"
                           ref="searchInput"></el-input>
                 <div :class="{ 'searchPopShow': isSearchPopShow, 'searchPopHide': !isSearchPopShow }"
                      ref="searchPop"
@@ -156,6 +157,7 @@
 </template>
 
 <script>
+import { handleMusicTime } from 'plugins/utils';
 import Login from 'components/login/LoginPop.vue'
 // 节流定时器名称
 let timer;
@@ -206,7 +208,7 @@ export default {
         // 获取热搜列表
         async getHotSearch() {
             let res = await this.$request('/search/hot/detail');
-            console.log("热搜列表: ", res);
+            // console.log("热搜列表: ", res);
             this.hotSearchList = res.data.data;
         },
 
@@ -215,6 +217,15 @@ export default {
             let res = await this.$request('/search/suggest', { keywords });
             console.log("搜索建议: ", res);
             this.searchSuggestList = res.data.result;
+        },
+
+        // 根据id获取歌曲详情
+        async getMusicInfo(ids) {
+            let res = await this.$request('/song/detail', { ids });
+            // console.log("获取歌曲详情: ", res);
+            // 处理时间
+            res.data.songs[0].dt = handleMusicTime(res.data.songs[0].dt);
+            return res.data.songs[0];
         },
 
 
@@ -273,16 +284,46 @@ export default {
             this.goSearch();
         },
 
+        // 在输入框按下回车的回调
+        onSubmit(e) {
+            // console.log(e);
+            if (e.key === 'Enter' && this.searchInput != '') {
+                this.goSearch();
+            }
+        },
+
         // 跳转至搜索详情页面
         goSearch() {
             this.searchPopHide();
-            // this.$router.push({ name: 'search', params: { id: this.searchInput } });
+            this.$router.push({ name: 'search', params: { id: this.searchInput } });
         },
 
         // 点击搜索建议中单曲的回调
         async clickSuggestSong(id) {
             console.log("搜索音乐id: ", id);
+            let row = await this.getMusicInfo(id);
             this.searchPopHide();
+            // 首先获取当前的歌单列表和歌曲索引
+            let musicList = this.$store.state.musicList;
+            let currentIndex = this.$store.state.currentIndex;
+            // 先判断该歌曲是否已经在歌单中存在，避免重复点击导致歌单出现相同歌曲
+            let isExist = musicList.find((item) => item.id == row.id);
+            if (isExist) {
+                // 如果已经存在 则只提交歌曲id并return出去
+                this.$store.commit('updateMusicId', row.id);
+                return;
+            }
+            this.$store.commit('changePlayState', false);
+            // 将请求到的歌曲详情插入到歌单对应位置并提交至vuex
+            // 数组的 splice() 方法用于在数组中插入、删除或替换元素
+            // currentIndex + 1: 表示要插入新元素的位置为当前索引的下一个
+            // 0: 表示要删除的元素数量
+            musicList.splice(currentIndex + 1, 0, row);
+            this.$store.commit('updateMusicId', row.id);
+            this.$store.commit('updateMusicList', {
+                musicList,
+                musicListId: this.$store.state.musicListId,
+            });
         },
 
         // 点击搜索建议中歌手的回调
@@ -300,6 +341,7 @@ export default {
         // 点击搜索建议中歌单的回调
         clickSuggestMusicList(id) {
             console.log("搜索歌单id: ", id);
+            this.$router.push({ name: 'musicListDetail', params: { id } });
             this.searchPopHide();
         },
 

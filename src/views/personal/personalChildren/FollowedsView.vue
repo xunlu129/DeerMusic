@@ -1,6 +1,6 @@
 <template>
     <div class="followeds">
-        <div class="title">{{ username + "的关注" }}</div>
+        <div class="title">{{ username + "的粉丝" }}</div>
         <!--使用.slice()将列表的值复制到一个新数组中。
             然后在UserListCard组件的watch中才可以监听到userList的变化-->
         <UserListCard :userList="userList.slice()"

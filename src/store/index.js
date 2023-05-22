@@ -31,6 +31,8 @@ export default createStore({
         },
         // 查询的歌单分类
         musicListTag: {},
+        // 搜索页面你可能感兴趣内容
+        multiMatch: [],
     },
     mutations: {
         //更新登录状态
@@ -56,7 +58,6 @@ export default createStore({
             // 当歌单id发生变化时,重置当前播放音乐索引
             if (payload.musicListId != state.musicListId) {
                 state.musicListId = payload.musicListId;
-                state.currentIndex = -1;
             }
             // 对歌单进行深拷贝再赋值 直接赋值是浅拷贝
             // 歌单是固定的死数据，而vuex中的musicList是动态的
@@ -96,5 +97,8 @@ export default createStore({
             state.musicListTag = musicListTag;
             // console.log("当前歌单类别: ", state.musicListTag);
         },
+        updateMultiMatch(state, multiMatch) {
+            state.multiMatch = multiMatch;
+        }
     }
 })

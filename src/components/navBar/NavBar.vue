@@ -63,7 +63,7 @@ export default {
     width: 100%;
     color: rgb(60, 60, 60);
     align-items: center;
-    padding: 20px 0 26px 40px;
+    padding: 20px 0 26px 0;
 }
 
 .barItem {
