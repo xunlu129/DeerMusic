@@ -138,7 +138,7 @@ export default {
                     if (this.multiMatch.length == 3) break;
                 }                
             }
-            console.log("你可能感兴趣: ", this.multiMatch);
+            // console.log("你可能感兴趣: ", this.multiMatch);
             // 上传vuex解决切换导航栏时，重新渲染search页面导致的你可能感兴趣内容闪一下
             this.$store.commit("updateMultiMatch", this.multiMatch);
         },

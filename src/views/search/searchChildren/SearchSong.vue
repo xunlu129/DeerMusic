@@ -1,5 +1,6 @@
 <template>
     <div class="searchSong">
+        <!-- 这里的播放效果样式不能直接简单的操作DOM，因为有分页，也可以做成无限滚动，或者根据索引渲染，但是太麻烦，摆了捏 -->
         <el-table :data="searchSongList"
                   style="width: 100%"
                   highlight-current-row
@@ -31,11 +32,11 @@
         <!-- 分页 -->
         <div class="page" v-if="searchSongList.length != 0">
             <el-pagination background
-                        layout="prev, pager, next"
-                        :total="songCount"
-                        :page-size="30"
-                        :current-page="currentPage"
-                        @current-change="pageChange"></el-pagination>
+                           layout="prev, pager, next"
+                           :total="songCount"
+                           :page-size="30"
+                           :current-page="currentPage"
+                           @current-change="pageChange"></el-pagination>
         </div>
     </div>
 </template>

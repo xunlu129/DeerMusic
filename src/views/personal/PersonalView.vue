@@ -19,7 +19,7 @@
                         <div class="gender"
                              :class="userInfo.gender == 1 ? 'nan' : 'nv'"
                              v-if="userInfo.gender == 1 || userInfo.gender == 2">
-                            <!-- 1男 2女 -->
+                            <!-- 0隐藏 1男 2女 -->
                             <i class="iconfont icon-nan" v-if="userInfo.gender == 1"></i>
                             <i class="iconfont icon-nv" v-if="userInfo.gender == 2"></i>
                         </div>
@@ -128,9 +128,8 @@ export default {
             // 增加用户等级
             res.data.profile['level'] = res.data.level;
             // 地区码转义
-            // 做完了之后才发现可以调用"/countries/code/list"api接口获取国家编码列表。。。
-            if (res.data.profile.province != 1000000) {
-                // 1000000就是没设置
+            if (res.data.profile.province >= 110000 && res.data.profile.province <= 820000) {
+                // 不在这范围内就是没设置或者隐藏了
                 for (var i = 0; i < provinceAndCity.length; i ++) {
                     // 确定省
                     if (provinceAndCity[i].code == res.data.profile.province) {
