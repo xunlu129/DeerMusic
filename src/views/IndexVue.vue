@@ -56,6 +56,7 @@
             </el-main>
         </el-container>
         <BottomControl></BottomControl>
+        <MusicDetailCard></MusicDetailCard>
     </el-container>
 </template>
 
@@ -63,11 +64,13 @@
 import axios from "axios";
 import HeaderBar from "@/components/headerBar/HeaderBar.vue"
 import BottomControl from "@/components/BottomControl/BottomControl.vue";
+import MusicDetailCard from "@/components/musicDetailCard/MusicDetailCard.vue";
 
 export default {
     components: {
         HeaderBar,
         BottomControl,
+        MusicDetailCard,
     },
     data() {
         return {

@@ -33,6 +33,8 @@ export default createStore({
         musicListTag: {},
         // 搜索页面你可能感兴趣内容
         multiMatch: [],
+        // 音乐详情卡片的显隐
+        isMusicDetailCardShow: false,
     },
     mutations: {
         //更新登录状态
@@ -63,7 +65,7 @@ export default createStore({
             // 歌单是固定的死数据，而vuex中的musicList是动态的
             let musicList = payload.musicList.slice(0)
             state.musicList = musicList;
-            console.log("当前歌单 " + state.musicListId + " 列表: ", state.musicList);
+            console.log("当前播放歌单 " + state.musicListId + " 列表: ", state.musicList);
         },
         // 更新音乐Id
         updateMusicId(state, musicId) {
@@ -99,6 +101,11 @@ export default createStore({
         },
         updateMultiMatch(state, multiMatch) {
             state.multiMatch = multiMatch;
-        }
+        },
+        // 切换音乐详情卡片的显隐
+        changeMusicDetailCardState(state) {
+            state.isMusicDetailCardShow = !state.isMusicDetailCardShow;
+            // console.log("音乐详情卡片显隐: ", state.isMusicDetailCardShow);
+        },
     }
 })

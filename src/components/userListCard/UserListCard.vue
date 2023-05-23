@@ -9,7 +9,7 @@
              :key="index">
             <div class="userItem">
                 <div class="left">
-                    <img :src="item.avatarUrl + '?param200y200'" alt="" class="avatar" @click="goToPersonal(item.userId)" />
+                    <img :src="item.avatarUrl + '?param==200y200'" alt="" class="avatar" @click="goToPersonal(item.userId)" />
                 </div>
                 <div class="right">
                     <div class="userName">

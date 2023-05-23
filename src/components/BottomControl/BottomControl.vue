@@ -9,12 +9,14 @@
                @timeupdate="timeupdate"></audio>
         <!--左边-->
         <div class="left">
-            <div class="avatar">
-                <img :src="musicDetail.al.picUrl" alt="" v-if="musicDetail.al" :draggable="false" />
+            <div class="avatar" @click="$store.commit('changeMusicDetailCardState')">
+                <img :src="musicDetail.al.picUrl + '?param==400y400'" alt="" v-if="musicDetail.al" :draggable="false" />
                 <img src="~assets/img/test.png" alt="" v-else :draggable="false" />
             </div>
             <div class="musicInfo">
-                <div class="musicName" v-if="musicDetail && musicDetail.name">
+                <div class="musicName"
+                     v-if="musicDetail && musicDetail.name"
+                     @click="$store.commit('changeMusicDetailCardState')">
                     {{ musicDetail.name }}
                 </div>
                 <div class="singer" v-if="musicDetail && musicDetail.name">
