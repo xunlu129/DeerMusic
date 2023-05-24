@@ -153,18 +153,20 @@ export default {
 
         // 点击感兴趣歌手的回调
         clickArtist(id) {
-            console.log("歌手id: ", id);
+            // console.log("歌手id: ", id);
+            this.$router.push({ name: 'singerDetail', params: { id } });
         },
 
         // 点击感兴趣歌单的回调
         clickPlayList(id) {
-            console.log("歌单id: ", id);
+            // console.log("歌单id: ", id);
             this.$router.push({ name: 'musicListDetail', params: { id } });
         },
 
         // 点击感兴趣视频的回调
         clickVideo(id) {
-            console.log("视频id: ", id);
+            // console.log("视频id: ", id);
+            this.$router.push({ name: 'videoDetail', params: { id, type: "mv" } });
         },
 
         // 更新返回的搜索信息

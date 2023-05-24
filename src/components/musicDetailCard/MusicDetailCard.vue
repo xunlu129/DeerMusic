@@ -10,26 +10,84 @@
                         <div class="needle"
                              :class="$store.state.isPlay ? 'needleRotate' : ''"
                              ref="needle">
-                            <img src="~assets/img/MusicDetailCard/needle.png" alt="" />
+                            <img src="~assets/img/MusicDetailCard/needle.png" alt="" :draggable="false" />
                         </div>
                         <!-- 通过音乐的加载时差删除discAnimation类名再添加,达到重置动画的效果 -->
                         <div class="disc" 
                              :class="[$store.state.isPlay ? '' : 'pause',
                                       $store.state.isMusicLoad ? '' : 'discAnimation']"
                              ref="disc">
-                            <img src="~assets/img/MusicDetailCard/disc.png" alt="" />
+                            <img src="~assets/img/MusicDetailCard/disc.png" alt="" :draggable="false" />
                             <img src="~assets/img/test.png" alt="" class="musicAvatar" v-if="!musicInfo.al" />
                             <img :src="musicInfo.al.picUrl + '?param==400y400'" alt="" class="musicAvatar" v-else />
                         </div>
                     </div>
                 </div>
-                <div class="rigth">
+                <div class="right">
+                    <div class="title">
+                        <div class="musicName">{{ musicInfo.name }}</div>
+                        <div class="musicInfo">
+                            <div class="singer"
+                                 @click="goToDetailPage('singerDetail', musicInfo.ar[0].id)">
+                                歌手：<span>{{ musicInfo.ar[0].name }}</span>
+                            </div>
+                            <div class="album"
+                                 @click="goToDetailPage('albumDetail', musicInfo.al.id)">
+                                专辑：<span>{{ musicInfo.al.name }}</span>
+                            </div>
+                        </div>
+                        <div class="tnsAndAlia">
+                            <div class="tns" v-if="musicInfo.al.tns.length != 0">{{ musicInfo.al.tns[0] }}</div>
+                            <div class="alia" v-if="musicInfo.alia.length != 0">{{ musicInfo.alia[0] }}</div>
+                            <div v-else>&nbsp;</div>
+                        </div>
+                    </div>
+                    <!-- 滚动歌词 -->
 
                 </div>
             </div>
-            <div class="bottom">
-
+            <div class="bottom" v-loading="isCommentLoading" element-loading-background="rgba(255, 255, 255, 0.2)">
+                <!--精彩评论-->
+                <CommentCompn :commentType="'music'"
+                              :comments="hotComments"
+                              :commentId="$store.state.musicId + ''"
+                              :musicTitle="musicInfo.name"
+                              :isInputShow="false"
+                              @getComment="getMusicComment($store.state.musicId)"
+                              v-if="isHotCommentCompnShow(hotComments)">
+                    <template #title>
+                        <div>精彩评论</div>
+                    </template>
+                </CommentCompn>
+                <!--最新评论-->
+                <CommentCompn :commentType="'music'"
+                              :comments="comment.comments"
+                              :commentId="$store.state.musicId + ''"
+                              :musicTitle="musicInfo.name"
+                              :isInputShow="false"
+                              @getComment="getMusicComment($store.state.musicId)"
+                              v-if="isNewCommentCompnShow(comment)">
+                    <template #title>
+                        <div>最新评论</div>
+                    </template>
+                </CommentCompn>
+                <div class="commentTip" 
+                     v-if="!isHotCommentCompnShow(hotComments) &&
+                           !isNewCommentCompnShow(comment)">
+                    该歌曲还没有人评论哦，快来抢占沙发吧！
+                </div>
+                <!-- 分页 -->
+                <div class="page" v-show="comment.comments && comment.comments.length != 0">
+                    <el-pagination background
+                                   layout="prev, pager, next"
+                                   :total="comment.total"
+                                   :page-size="20"
+                                   :current-page="currentCommentPage"
+                                   @current-change="commentPageChange">
+                    </el-pagination>
+                </div>
             </div>
+            <GoTop scrollObj=".musicDetailCardContainer"></GoTop>
         </div>
         <div v-else class="tip">暂无播放音乐</div>
     </div>
@@ -37,13 +95,19 @@
 
 <script>
 // 引入分析图片主题色的依赖
-import rgbaster from 'rgbaster'
+import rgbaster from 'rgbaster';
+import CommentCompn from '@/components/comment/CommentCompn.vue';
+import GoTop from "@/components/goTop/GoTop.vue";
 
 // 定时器名称
 let timer;
 
 export default {
     name: "MusicDetailCard",
+    components: {
+        CommentCompn,
+        GoTop,
+    },
     data() {
         return {
             // 是否显示歌曲详情卡片
@@ -64,6 +128,8 @@ export default {
             hotComments: [],
             // 是否已经渲染顶部背景主题色
             isColor: false,
+            // 记录上次翻评论的音乐id 只有当音乐相同时才触发滚动 防止切歌时触发滚动 切歌时会触发翻页函数
+            prevMusicId: "",
         }
     },
     methods: {
@@ -131,13 +197,22 @@ export default {
             // 获取时间戳
             var timestamp = Date.parse(new Date());
             this.isCommentLoading = true;
-            if (type == "changePage") {
-                // 换页滚回顶部
+            if (type == "changePage" && this.$store.state.musicId == this.prevMusicId) {
+                // 换页滚回评论区顶部 只有当歌曲没变时触发
                 let musicDetailCardContainer = document.querySelector(".musicDetailCardContainer");
                 let top = document.querySelector(".top");
                 musicDetailCardContainer.scrollTo({
                     behavior: "smooth",
                     top: top.clientHeight,
+                });
+                // console.log("滚回评论区顶部");
+            } else if (type == "changePage" && this.$store.state.musicId != this.prevMusicId) {
+                // 切歌滚回顶部
+                let musicDetailCardContainer = document.querySelector(".musicDetailCardContainer");
+                let top = document.querySelector(".top");
+                musicDetailCardContainer.scrollTo({
+                    behavior: "smooth",
+                    top: top.clientHeight - 550,
                 });
             }
             // 当页数为第一页时，请求10条热门数据
@@ -169,6 +244,43 @@ export default {
             this.isCommentLoading = false;
         },
 
+        // 事件
+        // 精彩评论组件是否显示
+        isHotCommentCompnShow(comments) {
+            if (this.currentCommentPage != 1) return false;
+            if (comments.length != 0) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+
+        // 最新评论组件是否显示
+        isNewCommentCompnShow(comment) {
+            if (!comment.comments) return false;
+            if (this.currentCommentPage != 1) return true;
+            if (comment.comments.length != 0) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+
+        //点击分页按钮的回调
+        commentPageChange(page) {
+            this.currentCommentPage = page;
+            this.getMusicComment(this.$store.state.musicId, "changePage");
+            // 更新 prevMusicId，切歌时会自动触发一次
+            this.prevMusicId = this.$store.state.musicId;
+            // console.log("触发了翻页");
+        },
+
+        // 点击跳转至对应的详情页面
+        goToDetailPage(name, id) {
+            this.$router.push({ name, params: { id } });
+            this.$store.commit("changeMusicDetailCardState", false);
+        },
+
         // 获取歌曲封面主题色进行背景渲染 这玩意儿挺吃性能的
         async getBackgroundColor(imgUrl) {
             let result = await rgbaster(imgUrl);
@@ -186,7 +298,7 @@ export default {
                     this.isColor = true;
                     // 将 dominantColor 设置为组件的顶部背景色，并设置透明度为 0.5
                     let musicDetailCard = document.querySelector('.musicDetailCard');
-                    musicDetailCard.style.backgroundImage = `linear-gradient(to bottom, rgba(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]}, 0.2), white)`;
+                    musicDetailCard.style.backgroundImage = `linear-gradient(to bottom, rgba(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]}, 0.1), white)`;
                 }
             } else {
                 this.isColor = true;
@@ -245,6 +357,8 @@ export default {
                 }
             } else {
                 this.musicInfo = {};
+                this.hotComments = [];
+                this.comment = {};
                 // 设置默认顶部背景色
                 this.isColor = true;
                 let musicDetailCard = document.querySelector('.musicDetailCard');
@@ -259,8 +373,8 @@ export default {
 .musicDetailCard {
     position: fixed;
     width: 100%;
-    height: calc(100vh - 60px);
-    bottom: 60px;
+    height: calc(100vh - 80px);
+    bottom: 80px;
     left: 0;
     z-index: 1000;
     transition: bottom 0.5s ease;
@@ -281,6 +395,7 @@ export default {
 .musicDetailCardContainer {
     height: 100%;
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .top {
@@ -290,11 +405,11 @@ export default {
 
 .left {
     width: 300px;
-    margin: 0 50px 0 -60px;
+    margin: 0 100px 0 -60px;
 }
 
 .discContainer {
-    margin-top: 80px;
+    margin: 80px 0 70px 0;
     width: 300px;
     position: relative;
 }
@@ -362,6 +477,81 @@ export default {
     /* 停止播放时动画保持在当前的进度位置上 */
     animation-play-state: paused;
     -webkit-animation-play-state: paused;
+}
+
+.right {
+    width: 450px;
+}
+
+.title {
+    width: 100%;
+    margin: 60px 0 15px;
+    color: rgb(145, 145, 145);
+}
+
+.title div {
+    margin: 5px 0;
+}
+
+.musicName {
+    margin: 10px 0 !important;
+    font-size: 30px;
+    color: rgb(22, 22, 22);
+    white-space: nowrap;
+}
+
+.musicInfo {
+    display: flex;
+    align-items: center;
+}
+
+.musicInfo span {
+    width: 150px;
+    display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.musicInfo span:hover {
+    color: #507ba6;
+}
+
+.singer, .album {
+    display: flex;
+    align-items: center;
+    margin-right: 20px !important;
+}
+
+.tnsAndAlia {
+    display: flex;
+    align-items: center;
+}
+
+.tnsAndAlia div {
+    margin-right: 20px;
+    white-space: nowrap;
+}
+
+.bottom {
+    margin: 50px auto;
+    width: 55vw;
+}
+
+.commentTip {
+    padding: 30px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #6d6d6d;
+}
+
+.page {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 40px;
 }
 
 .tip {

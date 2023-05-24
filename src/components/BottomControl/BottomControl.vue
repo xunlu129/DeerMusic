@@ -19,7 +19,7 @@
                      @click="$store.commit('changeMusicDetailCardState')">
                     {{ musicDetail.name }}
                 </div>
-                <div class="singer" v-if="musicDetail && musicDetail.name">
+                <div class="singer" v-if="musicDetail && musicDetail.name" @click="goToSingerDetail">
                     {{ musicDetail.ar[0].name }}
                 </div>
             </div>
@@ -414,6 +414,18 @@ export default {
                     // console.log("移除currentRow");
                 }
             });
+        },
+
+        // 点击歌手名跳转至歌手页面的回调
+        goToSingerDetail() {
+            if (this.$route.path != `/singerDetail/${this.musicDetail.ar[0].id}`)
+                this.$router.push({
+                    name: "singerDetail",
+                    params: { id: this.musicDetail.ar[0].id },
+                });
+            if (this.$store.state.isMusicDetailCardShow == true) {
+                this.$store.commit("changeMusicDetailCardState", false);
+            }
         },
 
         // 点击下载按钮的回调

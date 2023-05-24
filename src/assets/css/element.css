@@ -116,6 +116,11 @@
   background-color: rgb(251, 147, 72) !important;
 }
 
+/* 音量滑块整圆润点 */
+.right .el-slider__button-wrapper {
+  width: 10px !important;
+}
+
 /*备案号提示气泡权重搞大点，不然会被底部栏盖住*/
 .el-popper.is-dark {
   z-index: 20000 !important;
@@ -277,6 +282,34 @@ body .el-table .el-table__row .currentRow {
   width: 500px !important;
 }
 
+/* 弹窗叉叉样式 */
+.el-dialog__headerbtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 0;
+  width: 25px;
+  height: 25px;
+  background: 0 0;
+  border: none;
+  outline: 0;
+  cursor: pointer;
+  font-size: 25px;
+}
+
+.el-dialog__close:hover {
+  color: #D89F55 !important;
+}
+
+.el-dialog__body {
+  padding: 0 20px 5px !important;
+}
+
+.el-dialog {
+  border-radius: 10px !important;
+  --el-dialog-margin-top: 20vh !important;
+}
+
 
 /*从右到左排列的标签样式*/
 /* .rtl {
@@ -291,27 +324,13 @@ body .el-table .el-table__row .currentRow {
 
 
 
-.right .el-slider__button-wrapper {
-  width: 10px !important;
-}
-
 .el-popup-parent--hidden {
   padding-right: 0 !important;
 }
 
 
 
-.el-dialog__body {
-  padding: 0 20px 40px !important;
-}
 
-.el-dialog {
-  border-radius: 10px !important;
-}
-
-.el-dialog__close:hover {
-  color: #ea4848 !important;
-}
 
 .el-tooltip__popper {
   z-index: 20000 !important;

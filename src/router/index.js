@@ -20,6 +20,9 @@ const SearchAlbum = () => import('views/search/searchChildren/SearchAlbum.vue')
 const SearchVideo = () => import('views/search/searchChildren/SearchVideo.vue')
 const SearchMusicList = () => import('views/search/searchChildren/SearchMusicList.vue')
 const SearchUser = () => import('views/search/searchChildren/SearchUser.vue')
+const SingerDetail = () => import('views/singerDetail/SingerDetail.vue')
+const AlbumDetail = () => import('views/albumDetail/AlbumDetail.vue')
+const VideoDetail = () => import('views/videoDetail/VideoDetail.vue')
 
 const routes = [
     {path: '/', redirect: '/index'},
@@ -54,6 +57,9 @@ const routes = [
             },
             { path: '/recommendmusic', component: RecommendMusic },
             { path: '/musiclistdetail/:id', name: 'musicListDetail', component: MusicListDetail },
+            { path: '/singerdetail/:id', name: 'singerDetail', component: SingerDetail },
+            { path: '/albumdetail/:id', name: 'albumDetail', component: AlbumDetail },
+            { path: '/videodetail/:id/:type', name: 'videoDetail', component: VideoDetail },
             { path: '/personal/:uid', name: 'personal', component: Personal },
             { path: '/personal/follows/:uid', name: 'follows', component: Follows },
             { path: '/personal/followeds/:uid', name: 'followeds', component: Followeds },
