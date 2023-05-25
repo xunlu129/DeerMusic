@@ -15,6 +15,35 @@
                 </el-button>
             </div>
         </div>
+        <!--音乐单曲发表评论的弹窗-->
+        <div class="musicCommentOperation" v-else-if="commentType != '' && commentType == 'music'">
+            <el-button class="commentCardSwitch" round @click="openDialog" v-if="$store.state.isMusicDetailCardShow">
+                <i class="iconfont icon-ziyuan"></i> 快来说点什么吧
+            </el-button>
+            <el-dialog class="commentDialog"
+                       v-model="isCommentDialogShow"
+                       width="500px"
+                       @closed="closeCommentDialog"
+                       append-to-body
+                       :close-on-click-modal="false"
+                       :close-on-press-escape="false">
+                <div class="musicTitle">歌曲：{{ musicTitle }}</div>
+                <el-input class="commentArea musicCommentArea"
+                          type="textarea"
+                          maxlength="140"
+                          show-word-limit
+                          v-model="commentInput"
+                          placeholder="留下你的评论"
+                          @input="inputComment">
+                </el-input>
+                <div class="submitCommentButton">
+                    <el-button round class="submitComment musicSubmitComment"
+                               @click="commentMode ? submitComment() : submitReplyComment()">
+                        评论
+                    </el-button>
+                </div>
+            </el-dialog>
+        </div>
         <!--评论条目区-->
         <div class="commentHeader" v-if="comments.length != 0"><slot name="title"></slot></div>
         <div class="commentItem" v-for="(item, index) in comments" :key="index">
@@ -96,11 +125,12 @@ export default {
             default() {
                 return true;
             }
-        }
+        },
+
     },
     data() {
         return {
-            // 是否显示评论对话框
+            // 是否显示评论对话框 仅音乐详情卡片页评论
             isCommentDialogShow: false,
             // 评论模式   true是常规评论   false是楼层评论
             commentMode: true,
@@ -236,12 +266,33 @@ export default {
             }
         },
 
+        // 打开musicCommentDialog
+        openDialog() {
+            this.isCommentDialogShow = !this.isCommentDialogShow;
+            // dialog在第一次出现前是不渲染的，所以这里用nextTick
+            this.$nextTick(() => {
+                // 让评论框获得焦点
+                let input = document.querySelector(".musicCommentArea");
+                input.children[0].focus();
+                // console.log([input]);
+            });
+        },
+
+        // 关闭评论dialog的回调
+        closeCommentDialog() {
+            this.isCommentDialogShow = false;
+            this.commentInput = "";
+            this.floorCommentId = "";
+            this.commentMode = true;
+            this.floorCommentInputLength = 0;
+        },
+
         // 点击楼层评论的回调
         // commentId是评论id  nickName是评论作者
         replyComment(commentId, nickName) {
             // console.log(commentId, nickName);
             // isInputShow为false 说明没有文本框
-            if (this.isInputShow == false) {
+            if (this.commentType != "music" && this.isInputShow == false) {
                 // 将其转给hotComment处理
                 this.$emit("transToHotComment", { commentId, nickName });
             }
@@ -252,6 +303,8 @@ export default {
                 let input = document.querySelector(".commentArea");
                 // 阻止focus定位
                 input.children[0].focus({ preventScroll: true });
+            } else {
+                this.openDialog();
             }
             this.commentInput = "回复" + nickName + "：";
             this.floorCommentInputLength = this.commentInput.length;
@@ -323,7 +376,10 @@ export default {
             this.$router.push({
                 name: 'personal',
                 params: { uid: userId },
-            })
+            });
+            if (this.commentType == "music") {
+                this.$store.commit("changeMusicDetailCardState", false);
+            }
         },
 
         showDate(value) {
@@ -373,6 +429,60 @@ export default {
     background-color: #fff;
     color: #606266;
     border-color: #dcdfe6;
+}
+
+.commentCardSwitch {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    top: calc(100vh - 125px);
+    border: none;
+    background-color: #f1f1f1;
+    line-height: 20px;
+    font-size: 15px;
+    padding: 18px 15px;
+    color: #aaa;
+}
+
+.commentCardSwitch:hover {
+    background-color: #ebebeb;
+    color: #aaa;
+}
+
+.commentCardSwitch i {
+    margin-right: 5px;
+    font-size: 18px;
+}
+
+.musicTitle {
+    width: 100%;
+    font-weight: bold;
+    color: #333333;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.musicCommentArea /deep/ .el-textarea__inner {
+    height: 170px !important;
+}
+
+.musicSubmitComment {
+    padding: 6px 15px;
+    font-size: 15px;
+    background-color: #D89F55;
+    color: white;
+    border: none;
+}
+
+.musicSubmitComment:hover {
+    background-color: #c08e4e;
+    color: white;
+}
+
+.musicSubmitComment:focus {
+    color: white;
+    background-color: #D89F55;
 }
 
 .commentHeader {
@@ -436,6 +546,10 @@ export default {
 
 .repliedUser:hover {
     color: #507ba6;
+}
+
+.repliedItem > span {
+    line-height: 25px;
 }
 
 .commentBottom {

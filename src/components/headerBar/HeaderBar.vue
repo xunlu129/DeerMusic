@@ -329,12 +329,14 @@ export default {
         // 点击搜索建议中歌手的回调
         clickSuggestSinger(id) {
             console.log("搜索歌手id: ", id);
+            this.$router.push({ name: 'singerDetail', params: { id } });
             this.searchPopHide();
         },
 
         // 点击搜索建议中专辑的回调
         clickSuggestAlbum(id) {
             console.log("搜索专辑id: ", id);
+            this.$router.push({ name: 'albumDetail', params: { id } });
             this.searchPopHide();
         },
 

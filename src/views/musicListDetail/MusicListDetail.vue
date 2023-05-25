@@ -252,7 +252,7 @@ export default {
                 id: this.$route.params.id,
                 timestamp,
             });
-            console.log(this.$route.params.id + "歌单详情: ", res);
+            // console.log(this.$route.params.id + "歌单详情: ", res);
             this.musicListDetail = res.data.playlist;
             // 判断是否还有更多音乐
             if (
