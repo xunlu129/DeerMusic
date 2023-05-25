@@ -64,7 +64,7 @@
 import axios from "axios";
 import HeaderBar from "@/components/headerBar/HeaderBar.vue"
 import BottomControl from "@/components/BottomControl/BottomControl.vue";
-import MusicDetailCard from "@/components/musicDetailCard/MusicDetailCard.vue";
+import MusicDetailCard from "@/views/musicDetailCard/MusicDetailCard.vue";
 
 export default {
     components: {

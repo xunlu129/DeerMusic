@@ -37,13 +37,16 @@
                             </div>
                         </div>
                         <div class="tnsAndAlia">
-                            <div class="tns" v-if="musicInfo.al.tns.length != 0">{{ musicInfo.al.tns[0] }}</div>
+                            <div class="tns" 
+                                 v-if="musicInfo.tns && musicInfo.tns.length != 0">
+                                {{ musicInfo.tns[0] }}
+                            </div>
                             <div class="alia" v-if="musicInfo.alia.length != 0">{{ musicInfo.alia[0] }}</div>
                             <div v-else>&nbsp;</div>
                         </div>
                     </div>
                     <!-- 滚动歌词 -->
-
+                    <LyricsScroll class="lyricsScrollBox" :lyric="lyric"></LyricsScroll>
                 </div>
             </div>
             <div class="bottom" v-loading="isCommentLoading" element-loading-background="rgba(255, 255, 255, 0.2)">
@@ -97,7 +100,8 @@
 // 引入分析图片主题色的依赖
 import rgbaster from 'rgbaster';
 import CommentCompn from '@/components/comment/CommentCompn.vue';
-import GoTop from "@/components/goTop/GoTop.vue";
+import GoTop from '@/components/goTop/GoTop.vue';
+import LyricsScroll from '@/components/lyricsScroll/LyricsScroll.vue'
 
 // 定时器名称
 let timer;
@@ -107,6 +111,7 @@ export default {
     components: {
         CommentCompn,
         GoTop,
+        LyricsScroll,
     },
     data() {
         return {
@@ -137,7 +142,7 @@ export default {
         // 请求并处理歌词数据
         async getLyric(id) {
             let res = await this.$request("/lyric", { id });
-            console.log("歌词数据: ", res);
+            // console.log("歌词数据: ", res);
             // 原歌词
             let lyrics = res.data.lrc.lyric;
             // 对获取到的原歌词进行处理
@@ -189,7 +194,7 @@ export default {
                 }
             });
             this.lyric = result;
-            console.log("歌词数据: ", this.lyric);
+            // console.log("歌词数据: ", this.lyric);
         },
 
         // 请求评论数据
@@ -212,7 +217,7 @@ export default {
                 let top = document.querySelector(".top");
                 musicDetailCardContainer.scrollTo({
                     behavior: "smooth",
-                    top: top.clientHeight - 550,
+                    top: top.clientHeight - 575,
                 });
             }
             // 当页数为第一页时，请求10条热门数据
@@ -409,7 +414,7 @@ export default {
 }
 
 .discContainer {
-    margin: 80px 0 70px 0;
+    margin: 80px 0 95px 0;
     width: 300px;
     position: relative;
 }
@@ -481,11 +486,14 @@ export default {
 
 .right {
     width: 450px;
+    height: 540px;
+    display: flex;
+    flex-direction: column;
 }
 
 .title {
     width: 100%;
-    margin: 60px 0 15px;
+    margin: 60px 0 25px;
     color: rgb(145, 145, 145);
 }
 
@@ -497,7 +505,8 @@ export default {
     margin: 10px 0 !important;
     font-size: 30px;
     color: rgb(22, 22, 22);
-    white-space: nowrap;
+    width: 550px;
+    // white-space: nowrap;
 }
 
 .musicInfo {
@@ -534,8 +543,12 @@ export default {
     white-space: nowrap;
 }
 
+.lyricsScrollBox {
+    flex-grow: 1; /* 占据剩余空间 */
+}
+
 .bottom {
-    margin: 50px auto;
+    margin: 25px auto;
     width: 55vw;
 }
 

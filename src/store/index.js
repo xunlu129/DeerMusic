@@ -65,7 +65,7 @@ export default createStore({
             // 歌单是固定的死数据，而vuex中的musicList是动态的
             let musicList = payload.musicList.slice(0)
             state.musicList = musicList;
-            console.log("当前播放歌单 " + state.musicListId + " 列表: ", state.musicList);
+            // console.log("当前播放歌单 " + state.musicListId + " 列表: ", state.musicList);
         },
         // 更新音乐Id
         updateMusicId(state, musicId) {
