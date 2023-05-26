@@ -604,6 +604,25 @@ export default {
                 this.handleDrawerListDOM(currentIndex, lastIndex);
             }
         },
+    },
+    mounted() {
+        // 保存 Vue 实例的引用
+        var vm = this;
+        // 监听空格按下事件 播放或暂停音乐
+        document.addEventListener('keydown', function(event) {
+            // console.log(event);
+            // 检查当前焦点元素
+            var activeElement = document.activeElement;
+            var isInputField = activeElement.tagName == 'INPUT' || activeElement.tagName == 'TEXTAREA';
+            // 判断按下的键是否是空格键并且当前焦点不是输入字段
+            if (event.keyCode == 32 && !isInputField) {
+                // 阻止默认的空格键行为（滚动页面）
+                event.preventDefault();
+                if (vm.musicList.length != 0) {
+                    vm.changePlayState();
+                }                
+            }
+        });
     }
 }
 </script>
