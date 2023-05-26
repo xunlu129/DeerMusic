@@ -35,6 +35,12 @@ export default createStore({
         multiMatch: [],
         // 音乐详情卡片的显隐
         isMusicDetailCardShow: false,
+        // 已收藏的专辑
+        subAlbumList: null,
+        // 已收藏的歌手
+        subSingerList: null,
+        // 已收藏的video
+        subVideoList: null,
     },
     mutations: {
         //更新登录状态
@@ -106,6 +112,18 @@ export default createStore({
         changeMusicDetailCardState(state) {
             state.isMusicDetailCardShow = !state.isMusicDetailCardShow;
             // console.log("音乐详情卡片显隐: ", state.isMusicDetailCardShow);
+        },
+        // 更新已收藏的专辑列表
+        updateSubAlbumList(state, subAlbumList) {
+            state.subAlbumList = subAlbumList;
+        },
+        // 更新已收藏的歌手列表
+        updateSubSingerList(state, subSingerList) {
+            state.subSingerList = subSingerList;
+        },
+        // 更新已收藏的视频列表
+        updateSubVideoList(state, subVideoList) {
+            state.subVideoList = subVideoList;
         },
     }
 })

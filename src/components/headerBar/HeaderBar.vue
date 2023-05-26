@@ -381,8 +381,10 @@ export default {
         // 页面渲染后创建点击事件的监听器
         window.addEventListener("click", this.handleOutsideClick);
         // 页面渲染后给搜索框增加隐藏类，否则存在一个透明的搜索框
-        var searchPop = document.getElementById('searchPop');
-        searchPop.classList.add('searchPopHidden');
+        setTimeout(() => {
+            var searchPop = document.getElementById('searchPop');
+            searchPop.classList.add('searchPopHidden');
+        }, 50); // 在收藏页面刷新时，获取的数据有点久，延时等待渲染
     },
     beforeUnmount() {
         // 页面结束渲染前销毁点击事件的监听器

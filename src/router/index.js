@@ -12,6 +12,9 @@ const Follows = () => import('views/personal/personalChildren/FollowsView.vue')
 const Followeds = () => import('views/personal/personalChildren/FollowedsView.vue')
 const Video = () => import('views/video/VideoView.vue')
 const Favorites = () => import('views/favorites/FavoritesView.vue')
+const FavoriteAlbum = () => import('views/favorites/favoritesChildren/FavoriteAlbum.vue')
+const FavoriteVideo = () => import('views/favorites/favoritesChildren/FavoriteVideo.vue')
+const FavoriteSinger = () => import('views/favorites/favoritesChildren/FavoriteSinger.vue')
 const RecommendMusic = () => import('views/recommendMusic/RecommendMusic.vue')
 const Search = () => import('views/search/SearchView.vue')
 const SearchSong = () => import('views/search/searchChildren/SearchSong.vue')
@@ -54,6 +57,12 @@ const routes = [
             },
             {
                 path: '/favorites', component: Favorites,
+                redirect: '/favorites/favoritealbum',
+                children: [
+                    { path: '/favorites/favoritealbum', component: FavoriteAlbum },
+                    { path: '/favorites/favoritesinger', component: FavoriteSinger },
+                    { path: '/favorites/favoritevideo', component: FavoriteVideo },
+                ]
             },
             { path: '/recommendmusic', component: RecommendMusic },
             { path: '/musiclistdetail/:id', name: 'musicListDetail', component: MusicListDetail },
