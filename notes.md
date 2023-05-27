@@ -141,6 +141,8 @@ const router = createRouter({
 export default router
 ```
 
+
+
 ## 页面显示
 
 ### APP.vue
@@ -163,5 +165,56 @@ export default {
 
 <style>
 </style>
+```
+
+
+
+## 网页上线
+
+### 项目打包
+
+```
+npm run build
+```
+
+### 准备一台服务器，打开宝塔面板
+
+将打包好的dist文件夹里的文件和NeteaseCouldMusicApi项目分别上传到随便一个位置
+
+NeteaseCouldMusicApi是Node项目，所以直接在Node项目部署。还有记得上传时不要上传node_modules文件夹，太多文件上传不了的，部署时会自动添加。
+
+打包的vue项目是一堆静态文件，所以部署在PHP项目，并且要安装nginx反向代理
+
+- **最重要的是：记得把在安全里把相应端口号放行！**
+
+### Nginx修改配置
+
+修改 `/www/server/panel/vhost/nginx` 里的 `{服务名}.conf` 配置文件
+
+```javascript
+server
+{
+    listen 8088;
+    server_name {服务名};
+    charset utf-8;
+        
+    index index.php index.html index.htm default.php default.htm default.html;
+    root /www/wwwroot/deermusic/deermusic;
+    
+    location / {
+      try_files $uri $uri/ /index.html;
+    }
+    
+    location /api {
+        rewrite  ^.+api/?(.*)$ /$1 break;
+        proxy_pass  http://localhost:3000;
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    // ......
+}
 ```
 

@@ -187,7 +187,7 @@
 
 tr .is-leaf:nth-child(8) {
   display: none;
-} */
+}
 
 /*隐藏歌单表格的水平滚动条*/
 .el-table--scrollable-x .el-table__body-wrapper {
