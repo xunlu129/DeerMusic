@@ -41,7 +41,7 @@
                      ref="searchPop"
                      id="searchPop">
                     <!-- 热搜榜 -->
-                    <div class="hotSearch" v-if="!searchSuggestList.songs">
+                    <div class="hotSearch" v-if="Object.keys(searchSuggestList).length === 0">
                         <div class="hotSearchTitle">热搜榜</div>
                         <div class="hotSearchItem"
                              v-for="(item, index) in hotSearchList"
@@ -61,7 +61,7 @@
                         </div>
                     </div>
                     <!-- 搜索建议 -->
-                    <div class="searchSuggest">
+                    <div class="searchSuggest" v-else>
                         <div class="hotSearchTitle" v-if="searchSuggestList.songs">
                             搜索建议
                         </div>
@@ -216,7 +216,11 @@ export default {
         async getSearchSuggest(keywords) {
             let res = await this.$request('/search/suggest', { keywords });
             console.log("搜索建议: ", res);
-            this.searchSuggestList = res.data.result;
+            if (res.data.code === 200) {
+                this.searchSuggestList = res.data.result;
+            } else {
+                this.searchSuggestList = {};
+            }
         },
 
         // 根据id获取歌曲详情
